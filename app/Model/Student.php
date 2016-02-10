@@ -43,6 +43,10 @@ class Student extends AppModel {
             'className' => 'ClassInfo',
             'foreignKey' => 'current_class_id'
         ),
+        'Section' => array(
+            'className' => 'Section',
+            'foreignKey' => 'current_section_id'
+        )
     );
     public $validate = array(
         'current_class_id' => array(

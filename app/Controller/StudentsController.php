@@ -34,8 +34,8 @@ App::uses('AppController', 'Controller');
 class StudentsController extends AppController {
 
     public $uses = array('Student');
-    public $components = array("Custom");
-    
+    public $components = array("Custom", "DataTable");
+
     /**
      * Before filter
      * @return void
@@ -45,7 +45,7 @@ class StudentsController extends AppController {
     function beforeFilter() {
         $this->guestActions = array();
         $this->superadminActions = array();
-        $this->instituteAdminActions = array('index','setup','delete');
+        $this->instituteAdminActions = array('index', 'setup', 'delete', 'resultsByFilters');
         $this->adminActions = array();
         $this->userActions = array();
         parent::beforeFilter();
@@ -75,8 +75,12 @@ class StudentsController extends AppController {
      *    or MissingViewException in debug mode.
      */
     public function index() {
-        $classResult = $this->Custom->fetchClassesForDropDown($this->instituteId);
-        $this->set(compact("classResult"));
+        if ($this->instituteId != "") {
+            $classResult = $this->Custom->fetchClassesForDropDown($this->instituteId);
+            $this->set(compact("classResult"));
+        } else {
+            $this->redirect($this->UserAuth->redirect());
+        }
     }
 
     /**
@@ -87,34 +91,38 @@ class StudentsController extends AppController {
      *    or MissingViewException in debug mode.
      */
     public function setup($id = 0) {
-        $postData = $this->request->data;
-        $classResult = $this->Custom->fetchClassesForDropDown($this->instituteId);
-        if (!empty($postData)) {
-            if ($this->Student->validates()) {
-                if ($this->Student->save($postData)) {
-                    $msg = ($id > 0) ? __('The Student has been updated.') : __('The Student has been added.');
-                    if ($this->request->is('ajax')) {
-                        echo json_encode(array(
-                            'status' => "success",
-                            "message" => $msg,
-                            'callback' => array("prefix" => false, "controller" => "students", "action" => "index")
-                        ));
-                        exit;
-                    } else {
-                        $this->_setFlashMsgs($msg, 'success');
-                        $this->redirect(array('action' => 'index'));
+        if ($this->instituteId != "") {
+            $postData = $this->request->data;
+            $classResult = $this->Custom->fetchClassesForDropDown($this->instituteId);
+            if (!empty($postData)) {
+                if ($this->Student->validates()) {
+                    if ($this->Student->save($postData)) {
+                        $msg = ($id > 0) ? __('The Student has been updated.') : __('The Student has been added.');
+                        if ($this->request->is('ajax')) {
+                            echo json_encode(array(
+                                'status' => "success",
+                                "message" => $msg,
+                                'callback' => array("prefix" => false, "controller" => "students", "action" => "index")
+                            ));
+                            exit;
+                        } else {
+                            $this->_setFlashMsgs($msg, 'success');
+                            $this->redirect(array('action' => 'index'));
+                        }
                     }
                 }
+            } else {
+                if ($id > 0) {
+                    $result = $this->Student->fetchStudentDetailsById($id);
+                    $this->request->data = $result;
+                }
             }
+            $this->set(compact("id", "classResult"));
         } else {
-            if ($id > 0) {
-                $result = $this->Student->fetchStudentDetailsById($id);
-                $this->request->data = $result;
-            }
+            $this->redirect($this->UserAuth->redirect());
         }
-        $this->set(compact("id","classResult"));
     }
-    
+
     /**
      * Delete Students
      * @param int $id Id for delete cms
@@ -161,6 +169,81 @@ class StudentsController extends AppController {
             exit;
         }
     }
+
+    public function resultsByFilters() {
+        if ($this->RequestHandler->responseType() == 'json') {
+            $requestedData = array();
+            parse_str($this->request->query["Student"], $requestedData);
+            $conditions = array(
+                'Student.row_status' => 1
+            );
+            if (!empty($requestedData) && isset($requestedData["data"]) && isset($requestedData["data"]["Student"])) {
+                $postData = $requestedData["data"]["Student"];
+                if (isset($postData["keyword"]) && $postData["keyword"] != "") {
+                    $conditions['OR'] = array(
+                        'Student.first_name like' => '%' . $postData["keyword"] . '%',
+                        'Student.last_name like' => '%' . $postData["keyword"] . '%',
+                        'Student.admission_no like' => '%' . $postData["keyword"] . '%'
+                    );
+                }
+                if (isset($postData["current_class_id"]) && $postData["current_class_id"] != "") {
+                    $conditions['Student.current_class_id'] = $postData["current_class_id"];
+                }
+                if (isset($postData["current_section_id"]) && $postData["current_section_id"] != "") {
+                    $conditions['Student.current_section_id'] = $postData["current_section_id"];
+                }
+            }
+            $this->paginate = array(
+                'fields' => array(
+                    'Student.id',
+                    'Student.first_name',
+                    'Student.last_name',
+                    'Student.admission_no',
+                    'Student.date_of_joining',
+                    'ClassInfo.name',
+                    'Section.name'
+                ),
+                'joins' => array(
+                    array(
+                        'table' => 'class_infos',
+                        'alias' => 'ClassInfo',
+                        'type' => 'LEFT',
+                        'conditions' => array(
+                            'Student.current_class_id = ClassInfo.id',
+                            'ClassInfo.row_status' => 1
+                        )
+                    ),
+                    array(
+                        'table' => 'sections',
+                        'alias' => 'Section',
+                        'type' => 'LEFT',
+                        'conditions' => array(
+                            'Student.current_section_id = Section.id',
+                            'Section.row_status' => 1
+                        )
+                    )
+                ),
+                'conditions' => $conditions
+            );
+            $this->DataTable->mDataProp = true;
+            $result = $this->DataTable->getResponse();
+            $formattedArray = array();
+            if (isset($result["aaData"])) {
+                foreach ($result["aaData"] as $key => $val):
+                    $formattedArray[$key]["Student"]["name"] = '<a href="' . Router::url('/', true) . 'students/profile/' . $val["Student"]["id"] . '">' . implode('-', array_map('ucwords', explode('-', strtolower(addslashes($val["Student"]["first_name"]))))) . " " . implode('-', array_map('ucwords', explode('-', strtolower(addslashes($val["Student"]["last_name"]))))) . '</a>';
+                    $formattedArray[$key]["Student"]["admission_no"] = ($val["Student"]["admission_no"] != "") ? $val["Student"]["admission_no"] : "N/A";
+                    $formattedArray[$key]["ClassInfo"]["name"] = implode('-', array_map('ucwords', explode('-', strtolower(addslashes($val["ClassInfo"]["name"])))));
+                    $formattedArray[$key]["Section"]["name"] = ($val["Section"]["name"] != "") ? implode('-', array_map('ucwords', explode('-', strtolower(addslashes($val["Section"]["city"]))))) : "N/A";
+                    $formattedArray[$key]["Student"]["date_of_joining"] = date("d/m/Y", strtotime($val["Student"]["date_of_joining"]));
+                    $formattedArray[$key]["Student"]["id"] = '<div class="btn-group"><a class="btn-white btn btn-xs" href="' . Router::url('/', true) . 'students/setup/' . $val["Student"]["id"] . '">' . __("Edit") . '</a><a class="btn-white btn btn-xs delete-confirm-alert" href="' . Router::url('/', true) . 'students/delete/' . $val["Student"]["id"] . '" data-message = "You are permenantly deleting this state!">' . __("Delete") . '</a></div>';
+                endforeach;
+            }
+            $result["aaData"] = $formattedArray;
+            $this->set('response', $result);
+            $this->set('_serialize', 'response');
+        }
+    }
+
 }
 
 ?>

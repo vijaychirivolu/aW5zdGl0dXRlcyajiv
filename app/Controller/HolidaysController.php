@@ -34,7 +34,7 @@ App::uses('AppController', 'Controller');
 class HolidaysController extends AppController {
 
     public $uses = array('Holiday');
-    
+
     /**
      * Before filter
      * @return void
@@ -44,7 +44,7 @@ class HolidaysController extends AppController {
     function beforeFilter() {
         $this->guestActions = array();
         $this->superadminActions = array();
-        $this->instituteAdminActions = array('index','setup','delete');
+        $this->instituteAdminActions = array('index', 'setup', 'delete');
         $this->adminActions = array();
         $this->userActions = array();
         parent::beforeFilter();
@@ -74,8 +74,12 @@ class HolidaysController extends AppController {
      *    or MissingViewException in debug mode.
      */
     public function index() {
-        $holidaysList = $this->Holiday->fetchHolidaysDetailsByInstituteId($this->instituteId);
-        $this->set(compact("holidaysList"));
+        if ($this->instituteId != "") {
+            $holidaysList = $this->Holiday->fetchHolidaysDetailsByInstituteId($this->instituteId);
+            $this->set(compact("holidaysList"));
+        } else {
+            $this->redirect($this->UserAuth->redirect());
+        }
     }
 
     /**
@@ -86,33 +90,37 @@ class HolidaysController extends AppController {
      *    or MissingViewException in debug mode.
      */
     public function setup($id = 0) {
-        $postData = $this->request->data;
-        if (!empty($postData)) {
-            if ($this->Holiday->validates()) {
-                if ($this->Holiday->save($postData)) {
-                    $msg = ($id > 0) ? __('The Holiday has been updated.') : __('The Holiday has been added.');
-                    if ($this->request->is('ajax')) {
-                        echo json_encode(array(
-                            'status' => "success",
-                            "message" => $msg,
-                            'callback' => array("prefix" => false, "controller" => "holidays", "action" => "index")
-                        ));
-                        exit;
-                    } else {
-                        $this->_setFlashMsgs($msg, 'success');
-                        $this->redirect(array('action' => 'index'));
+        if ($this->instituteId != "") {
+            $postData = $this->request->data;
+            if (!empty($postData)) {
+                if ($this->Holiday->validates()) {
+                    if ($this->Holiday->save($postData)) {
+                        $msg = ($id > 0) ? __('The Holiday has been updated.') : __('The Holiday has been added.');
+                        if ($this->request->is('ajax')) {
+                            echo json_encode(array(
+                                'status' => "success",
+                                "message" => $msg,
+                                'callback' => array("prefix" => false, "controller" => "holidays", "action" => "index")
+                            ));
+                            exit;
+                        } else {
+                            $this->_setFlashMsgs($msg, 'success');
+                            $this->redirect(array('action' => 'index'));
+                        }
                     }
                 }
+            } else {
+                if ($id > 0) {
+                    $result = $this->Holiday->fetchHolidayDetailsById($id);
+                    $this->request->data = $result;
+                }
             }
+            $this->set("id", $id);
         } else {
-            if ($id > 0) {
-                $result = $this->Holiday->fetchHolidayDetailsById($id);
-                $this->request->data = $result;
-            }
+            $this->redirect($this->UserAuth->redirect());
         }
-        $this->set("id",$id);
     }
-    
+
     /**
      * Delete Holidays
      * @param int $id Id for delete cms
@@ -160,6 +168,7 @@ class HolidaysController extends AppController {
             exit;
         }
     }
+
 }
 
 ?>

@@ -42,3 +42,6 @@ button.DTTT_button:hover, div.DTTT_button:hover, a.DTTT_button:hover {
 .wizard-big.wizard > .content{
     min-height:400px;
 }
+.table-none{
+    display: none;
+}

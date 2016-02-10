@@ -84,11 +84,11 @@
                         </div>
                         <div class="col-sm-3">
                             <div class="form-group">
-                                <label class="control-label" for="price">Class</label>
+                                <label class="control-label" for="class">Class</label>
                                 <?php
                                     echo  $this->AppForm->input('current_class_id',array(
                                         'type'=>'select',
-                                        'class'=>'form-control m-b required',
+                                        'class'=>'form-control m-b',
                                         'options' => $classResult,
                                         'label'=>false,
                                         'div'=>false
@@ -98,11 +98,11 @@
                         </div>
                         <div class="col-sm-3">
                             <div class="form-group">
-                                <label class="control-label" for="quantity">Section</label>
+                                <label class="control-label" for="section">Section</label>
                                 <?php
                                     echo  $this->AppForm->input('current_section_id',array(
                                         'type'=>'select',
-                                        'class'=>'form-control m-b required',
+                                        'class'=>'form-control m-b',
                                         'options' => array(),
                                         'label'=>false,
                                         'div'=>false
@@ -127,7 +127,7 @@
             </div>
         </div>
     </div>
-    <div class="row">
+    <div class="row table-none" id="student-table-results">
         <div class="col-lg-12">
             <div class="ibox float-e-margins">
                 <div class="ibox-title">
@@ -154,7 +154,7 @@
                     <div class="">
                         <a href="<?php echo $this->Html->Url(array("controller"=>"students","action"=>"setup"));?>" class="btn btn-primary "><?php echo __("Add a new student");?></a>
                     </div>
-                    <table class="table table-striped table-bordered table-hover jquery-dataTable">
+                    <table class="table table-striped table-bordered table-hover" id="studentsResultsByFilters">
                         <thead>
                             <tr>
                                 <th><?php echo __("Name");?></th>

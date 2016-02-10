@@ -34,7 +34,7 @@ App::uses('AppController', 'Controller');
 class ClassesController extends AppController {
 
     public $uses = array('ClassInfo');
-    
+
     /**
      * Before filter
      * @return void
@@ -44,7 +44,7 @@ class ClassesController extends AppController {
     function beforeFilter() {
         $this->guestActions = array();
         $this->superadminActions = array();
-        $this->instituteAdminActions = array('index','setup','delete');
+        $this->instituteAdminActions = array('index', 'setup', 'delete');
         $this->adminActions = array();
         $this->userActions = array();
         parent::beforeFilter();
@@ -74,8 +74,12 @@ class ClassesController extends AppController {
      *    or MissingViewException in debug mode.
      */
     public function index() {
-        $classesList = $this->ClassInfo->fetchClassInfosDetailsByInstituteId($this->instituteId);
-        $this->set(compact("classesList"));
+        if ($this->instituteId != "") {
+            $classesList = $this->ClassInfo->fetchClassInfosDetailsByInstituteId($this->instituteId);
+            $this->set(compact("classesList"));
+        } else {
+            $this->redirect($this->UserAuth->redirect());
+        }
     }
 
     /**
@@ -86,33 +90,37 @@ class ClassesController extends AppController {
      *    or MissingViewException in debug mode.
      */
     public function setup($id = 0) {
-        $postData = $this->request->data;
-        if (!empty($postData)) {
-            if ($this->ClassInfo->validates()) {
-                if ($this->ClassInfo->save($postData)) {
-                    $msg = ($id > 0) ? __('The Class has been updated.') : __('The Class has been added.');
-                    if ($this->request->is('ajax')) {
-                        echo json_encode(array(
-                            'status' => "success",
-                            "message" => $msg,
-                            'callback' => array("prefix" => false, "controller" => "classes", "action" => "index")
-                        ));
-                        exit;
-                    } else {
-                        $this->_setFlashMsgs($msg, 'success');
-                        $this->redirect(array('action' => 'index'));
+        if ($this->instituteId != "") {
+            $postData = $this->request->data;
+            if (!empty($postData)) {
+                if ($this->ClassInfo->validates()) {
+                    if ($this->ClassInfo->save($postData)) {
+                        $msg = ($id > 0) ? __('The Class has been updated.') : __('The Class has been added.');
+                        if ($this->request->is('ajax')) {
+                            echo json_encode(array(
+                                'status' => "success",
+                                "message" => $msg,
+                                'callback' => array("prefix" => false, "controller" => "classes", "action" => "index")
+                            ));
+                            exit;
+                        } else {
+                            $this->_setFlashMsgs($msg, 'success');
+                            $this->redirect(array('action' => 'index'));
+                        }
                     }
                 }
+            } else {
+                if ($id > 0) {
+                    $result = $this->ClassInfo->fetchClassInfoDetailsById($id);
+                    $this->request->data = $result;
+                }
             }
+            $this->set("id", $id);
         } else {
-            if ($id > 0) {
-                $result = $this->ClassInfo->fetchClassInfoDetailsById($id);
-                $this->request->data = $result;
-            }
+            $this->redirect($this->UserAuth->redirect());
         }
-        $this->set("id",$id);
     }
-    
+
     /**
      * Delete Classes
      * @param int $id Id for delete cms
@@ -159,6 +167,7 @@ class ClassesController extends AppController {
             exit;
         }
     }
+
 }
 
 ?>
