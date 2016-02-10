@@ -282,7 +282,8 @@ class InstitutesController extends AppController {
     public function timings() {
         if ($this->instituteId != "") {
             $weekData = $this->Custom->fetchGroupValuesById(9000);
-            $this->set("weekData", $weekData);
+            $timings = array(9=>"9:00",9.5=>"9:30",10=>"10:00");
+            $this->set(compact('weekData','timings'));
         } else {
             $this->redirect($this->UserAuth->redirect());
         }
