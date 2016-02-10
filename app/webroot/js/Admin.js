@@ -9,104 +9,18 @@ var abortAjaxFlag = '';
 var dataTable = '';
 $(window).load(function () {
     $("#spinner").fadeOut("slow");
-    google.maps.event.addDomListener(window, 'load', googleInitialize);
+});
+$(document).ready(function () {
+    $('.i-checks').iCheck({
+        checkboxClass: 'icheckbox_square-green',
+        radioClass: 'iradio_square-green',
+    });
 });
 $(
         function () {
             Admin.init();
         }
 );
-function googleInitialize() {
-    var selectedIcon = SITEURL + 'img/map_icon.jpeg';
-    $("#regmap_canvas").css('height', '400');
-    var markers = [];
-    var default_lat = '20.593684';
-    var default_lng = '78.8718';
-    var default_zoom = 4;
-    if ($("#SchoolLat").val() != "" && $("#SchoolLng").val() != "") {
-        default_lat = $("#SchoolLat").val();
-        default_lng = $("#SchoolLng").val();
-        default_zoom = 16;
-    }
-    var mapOptions = {
-        center: new google.maps.LatLng(default_lat, default_lng),
-        zoom: default_zoom,
-        mapTypeId: google.maps.MapTypeId.ROADMAP
-    };
-    var map = new google.maps.Map(document.getElementById('regmap_canvas'), mapOptions);
-    // Create a marker for each place.
-    var marker = new google.maps.Marker({
-        map: map,
-        position: new google.maps.LatLng(default_lat, default_lng)
-    });
-
-    markers.push(marker);
-    marker.setIcon(selectedIcon);
-
-
-//  var defaultBounds = new google.maps.LatLngBounds(
-//      new google.maps.LatLng(default_lat, default_lng));
-//  map.fitBounds(defaultBounds);
-
-    // Create the search box and link it to the UI element.
-    var input = /** @type {HTMLInputElement} */(
-            document.getElementById('SchoolAddress'));
-    map.controls[google.maps.ControlPosition.TOP_LEFT].push(input);
-
-    var searchBox = new google.maps.places.SearchBox(
-            /** @type {HTMLInputElement} */(input));
-
-    // [START region_getplaces]
-    // Listen for the event fired when the user selects an item from the
-    // pick list. Retrieve the matching places for that item.
-    google.maps.event.addListener(searchBox, 'places_changed', function () {
-        var places = searchBox.getPlaces();
-
-        if (places.length == 0) {
-            return;
-        }
-        for (var i = 0, marker; marker = markers[i]; i++) {
-            marker.setMap(null);
-        }
-
-        // For each place, get the icon, place name, and location.
-        markers = [];
-        var bounds = new google.maps.LatLngBounds();
-        for (var i = 0, place; place = places[i]; i++) {
-            $("#SchoolLat").val(place.geometry.location.lat());
-            $("#SchoolLng").val(place.geometry.location.lng());
-            var image = {
-                url: place.icon,
-                size: new google.maps.Size(71, 71),
-                origin: new google.maps.Point(0, 0),
-                anchor: new google.maps.Point(17, 34),
-                scaledSize: new google.maps.Size(25, 25)
-            };
-
-            // Create a marker for each place.
-            var marker = new google.maps.Marker({
-                map: map,
-                icon: image,
-                title: place.name,
-                position: place.geometry.location
-            });
-
-            markers.push(marker);
-            marker.setIcon(selectedIcon);
-            bounds.extend(place.geometry.location);
-        }
-        map.setZoom(16);
-        map.setCenter(bounds.getCenter());
-    });
-    // [END region_getplaces]
-
-    // Bias the SearchBox results towards places that are within the bounds of the
-    // current map's viewport.
-    google.maps.event.addListener(map, 'bounds_changed', function () {
-        var bounds = map.getBounds();
-        searchBox.setBounds(bounds);
-    });
-}
 function updateCountdown() {
     // 140 is the max message length
     var remaining = 500 - $('.help_text').val().length;
@@ -153,6 +67,8 @@ var Admin = function () {
         initGalleryUpload();
         initSchoolWizardSteps();
         initUserAjaxDataTables();
+        initDateRangePicker();
+        initDatePicker();
     }
 
 
@@ -165,6 +81,33 @@ var Admin = function () {
     {
         initFileSelect();
         ajaxFormSubmit();
+        initCustomBrowseButton();
+    }
+    
+    /**
+     * 
+     * @returns {undefined}
+     */
+    function initDateRangePicker() {
+        $('.input-daterange').datepicker({
+            keyboardNavigation: false,
+            forceParse: false,
+            autoclose: true,
+            format: "dd/mm/yyyy"
+        });
+    }
+    
+    /**
+     * 
+     * @returns {undefined}
+     */
+    function initDatePicker() {
+        $('.date-picker').datepicker({
+            keyboardNavigation: false,
+            forceParse: false,
+            autoclose: true,
+            format: "dd/mm/yyyy"
+        });
     }
 
     /**
@@ -228,40 +171,40 @@ var Admin = function () {
 
         return custom;
     }
-    
-     /**
+
+    /**
      * 
      * @returns {undefined}
      */
     function initCitiesByStateId() {
-        $(".citi-by-state").each(function(){
-            $(this).change(function(){
-               var state = $(this).val();
-               if (state != null && state != 'undefined') {
-                   if (ajaxFlag == false) {
+        $(".citi-by-state").each(function () {
+            $(this).change(function () {
+                var state = $(this).val();
+                if (state != null && state != 'undefined') {
+                    if (ajaxFlag == false) {
                         ajaxFlag = true;
-                        var formdata = {state:state};
+                        var formdata = {state: state};
                         $.ajax({
                             url: SITEURL + "admin/users/fetchCitiesByState",
                             type: 'POST',
                             data: formdata,
                             dataType: "json",
-                            success: function(data, textStatus, jqXHR)
+                            success: function (data, textStatus, jqXHR)
                             {
                                 var append_data = "<option value=''>Select City</option>";
                                 for (var i = 0; i < data.length; i++) {
-                                    append_data += "<option value="+data[i]+">"+data[i]+"</option>";
+                                    append_data += "<option value=" + data[i] + ">" + data[i] + "</option>";
                                 }
                                 ajaxFlag = false;
                                 $("#UserUserCity").html(append_data);
                             },
-                            error: function(jqXHR, textStatus, errorThrown)
+                            error: function (jqXHR, textStatus, errorThrown)
                             {
                                 ajaxFlag = false;
                             }
                         });
                     }
-               }
+                }
             });
         });
     }
@@ -270,79 +213,79 @@ var Admin = function () {
      * @returns {undefined}
      */
     function initAddressByCityState() {
-        $(".city-state-address").each(function(){
-            $(this).change(function(){
-               var city = $(this).val();
-               var state = $("#UserUserState").val();
-               if ((state != null && state != 'undefined') && ( city != null && city != 'undefined') ) {
-                   if (ajaxFlag == false) {
+        $(".city-state-address").each(function () {
+            $(this).change(function () {
+                var city = $(this).val();
+                var state = $("#UserUserState").val();
+                if ((state != null && state != 'undefined') && (city != null && city != 'undefined')) {
+                    if (ajaxFlag == false) {
                         ajaxFlag = true;
-                        var formdata = {state:state,city:city};
+                        var formdata = {state: state, city: city};
                         $.ajax({
                             url: SITEURL + "admin/users/fetchAddressByCityState",
                             type: 'POST',
                             data: formdata,
                             dataType: "json",
-                            success: function(data, textStatus, jqXHR)
+                            success: function (data, textStatus, jqXHR)
                             {
                                 var append_data = "<option value=''>Select Address</option>";
                                 for (var i = 0; i < data.length; i++) {
-                                    append_data += "<option value="+data[i]+">"+data[i]+"</option>";
+                                    append_data += "<option value=" + data[i] + ">" + data[i] + "</option>";
                                 }
                                 ajaxFlag = false;
                                 $("#UserUserAddress").html(append_data);
                             },
-                            error: function(jqXHR, textStatus, errorThrown)
+                            error: function (jqXHR, textStatus, errorThrown)
                             {
                                 ajaxFlag = false;
                             }
                         });
                     }
-               }
+                }
             });
         });
     }
 
 
     function initSchoolByAddress() {
-        $(".school-address").each(function(){
-            $(this).change(function(){
-               var address = $(this).val();
-               var state = $("#UserUserState").val();
-               var city = $("#UserUserCity").val();
-               if ((state != null && state != 'undefined') && ( city != null && city != 'undefined') && (address != null && address != 'undefined') ) {
-                   if (ajaxFlag == false) {
+        $(".school-address").each(function () {
+            $(this).change(function () {
+                var address = $(this).val();
+                var state = $("#UserUserState").val();
+                var city = $("#UserUserCity").val();
+                if ((state != null && state != 'undefined') && (city != null && city != 'undefined') && (address != null && address != 'undefined')) {
+                    if (ajaxFlag == false) {
                         ajaxFlag = true;
-                        var formdata = {state:state,city:city,address:address};
+                        var formdata = {state: state, city: city, address: address};
                         $.ajax({
                             url: SITEURL + "admin/users/fetchSchoolByAddress",
                             type: 'POST',
                             data: formdata,
                             dataType: "json",
-                            success: function(data, textStatus, jqXHR)
+                            success: function (data, textStatus, jqXHR)
                             {
                                 var append_data = "<option value=''>Select School</option>";
                                 for (var i = 0; i < data.length; i++) {
-                                    append_data += "<option value="+data[i]['id']+">"+data[i]['name']+"</option>";
+                                    append_data += "<option value=" + data[i]['id'] + ">" + data[i]['name'] + "</option>";
                                 }
                                 ajaxFlag = false;
                                 $("#UserSchoolId").html(append_data);
                             },
-                            error: function(jqXHR, textStatus, errorThrown)
+                            error: function (jqXHR, textStatus, errorThrown)
                             {
                                 ajaxFlag = false;
                             }
                         });
                     }
-               }
+                }
             });
         });
     }
 
 
     function initRole() {
-        $(".user-role").each(function(){
-            $(this).change(function(){
+        $(".user-role").each(function () {
+            $(this).change(function () {
                 var role = $(this).val();
                 if (role != "" && role != 1001 && role != 1002) {
                     $(".role-based-hide").show();
@@ -350,7 +293,7 @@ var Admin = function () {
                     $(".role-based-hide").hide();
                 }
             });
-        });   
+        });
     }
     /**
      * 
@@ -627,25 +570,25 @@ var Admin = function () {
                     "aButtons": [
                         {
                             "sExtends": "copy",
-                            "mColumns": [0, 1, 2, 3,4]
+                            "mColumns": [0, 1, 2, 3, 4]
                         },
                         {
                             "sExtends": "csv",
-                            "mColumns": [0, 1, 2, 3,4]
+                            "mColumns": [0, 1, 2, 3, 4]
                         },
                         {
                             "sExtends": "xls",
                             "sFileName": "*.xls",
                             "bFooter": false,
-                            "mColumns": [0, 1, 2, 3,4]
+                            "mColumns": [0, 1, 2, 3, 4]
                         },
                         {
                             "sExtends": "pdf",
-                            "mColumns": [0, 1, 2, 3,4]
+                            "mColumns": [0, 1, 2, 3, 4]
                         },
                         {
                             "sExtends": "print",
-                            "mColumns": [0, 1, 2, 3,4]
+                            "mColumns": [0, 1, 2, 3, 4]
                         }
                     ]
                 },
@@ -660,7 +603,7 @@ var Admin = function () {
                         "sPrevious": "<i class='fa fa-arrow-left custom-right'></i>"
                     }
                 },
-                'sAjaxSource': SITEURL+'admin/users/manage.json',
+                'sAjaxSource': SITEURL + 'admin/users/manage.json',
                 "aoColumns": [
                     {mData: "User.first_name"},
                     {mData: "User.email"},
@@ -668,7 +611,7 @@ var Admin = function () {
                     {mData: "School.name"},
                     {mData: "User.id"}
                 ],
-                "fnRowCallback": function(nRow, aData, iDisplayIndex, iDisplayIndexFull) {
+                "fnRowCallback": function (nRow, aData, iDisplayIndex, iDisplayIndexFull) {
                     //$('td:eq(0)', nRow).html(aData.State.state_name);
                     //$('td:eq(1)', nRow).html(aData.State.abbrevations);
                     //$('td:eq(2)', nRow).html((aData.State.population !=0 && aData.State.population !=null)?formatNumber(aData.State.population):"N/A");
@@ -703,25 +646,25 @@ var Admin = function () {
                     "aButtons": [
                         {
                             "sExtends": "copy",
-                            "mColumns": [0, 1, 2, 3,4]
+                            "mColumns": [0, 1, 2, 3, 4]
                         },
                         {
                             "sExtends": "csv",
-                            "mColumns": [0, 1, 2, 3,4]
+                            "mColumns": [0, 1, 2, 3, 4]
                         },
                         {
                             "sExtends": "xls",
                             "sFileName": "*.xls",
                             "bFooter": false,
-                            "mColumns": [0, 1, 2, 3,4]
+                            "mColumns": [0, 1, 2, 3, 4]
                         },
                         {
                             "sExtends": "pdf",
-                            "mColumns": [0, 1, 2, 3,4]
+                            "mColumns": [0, 1, 2, 3, 4]
                         },
                         {
                             "sExtends": "print",
-                            "mColumns": [0, 1, 2, 3,4]
+                            "mColumns": [0, 1, 2, 3, 4]
                         }
                     ]
                 },
@@ -736,7 +679,7 @@ var Admin = function () {
                         "sPrevious": "<i class='fa fa-arrow-left custom-right'></i>"
                     }
                 },
-                'sAjaxSource': SITEURL+'admin/schools/index.json',
+                'sAjaxSource': SITEURL + 'admin/schools/index.json',
                 "aoColumns": [
                     {mData: "School.name"},
                     {mData: "School.registration_no"},
@@ -744,7 +687,7 @@ var Admin = function () {
                     {mData: "School.city"},
                     {mData: "School.id"}
                 ],
-                "fnRowCallback": function(nRow, aData, iDisplayIndex, iDisplayIndexFull) {
+                "fnRowCallback": function (nRow, aData, iDisplayIndex, iDisplayIndexFull) {
                 },
                 "fnDrawCallback": function () {
                     confirmMessageAlerts();
@@ -752,16 +695,44 @@ var Admin = function () {
             });
         });
     }
-    
-     /**
+
+    /**
      * Init Data table
      * 
      */
 
     function initJqueryDataTable()
     {
-        $(".jquery-dataTable").each(function() {
+        $(".jquery-dataTable").each(function () {
             var dataTable = $(this).DataTable({
+                "dom": 'T<"clear">lfrtip',
+                "oTableTools": {
+                    "sSwfPath": SITEURL + "js/plugins/dataTables/swf/copy_csv_xls_pdf.swf",
+                    "aButtons": [
+                        {
+                            "sExtends": "copy",
+                            "mColumns": [0, 1, 2, 3, 4]
+                        },
+                        {
+                            "sExtends": "csv",
+                            "mColumns": [0, 1, 2, 3, 4]
+                        },
+                        {
+                            "sExtends": "xls",
+                            "sFileName": "*.xls",
+                            "bFooter": false,
+                            "mColumns": [0, 1, 2, 3, 4]
+                        },
+                        {
+                            "sExtends": "pdf",
+                            "mColumns": [0, 1, 2, 3, 4]
+                        },
+                        {
+                            "sExtends": "print",
+                            "mColumns": [0, 1, 2, 3, 4]
+                        }
+                    ]
+                },
                 "bInfo": false,
                 "bLengthChange": false,
                 "iDisplayLength": 10,
@@ -773,39 +744,39 @@ var Admin = function () {
                         "sPrevious": "<i class='fa fa-angle-left'></i>"
                     }
                 },
-                "fnDrawCallback": function() {
+                "fnDrawCallback": function () {
                     confirmMessageAlerts();
                 }
             });
         });
     }
-    
+
     /**
      * 
      * @returns {undefined}
      */
     function initImageAnimateHover() {
-        $('.file-box').each(function() {
+        $('.file-box').each(function () {
             animationHover(this, 'pulse');
         });
     }
-    
+
     /**
      * Summerynote
      */
     function initSummernote()
     {
         $('.summernote').summernote();
-        var edit = function() {
+        var edit = function () {
             $('.click2edit').summernote({focus: true});
         };
-        var save = function() {
+        var save = function () {
             var aHTML = $('.click2edit').code(); //save HTML If you need(aHTML: array).
             $('.click2edit').destroy();
         };
     }
-    
-    
+
+
     /**
      * InitGalleryUpload
      * @returns {undefined}

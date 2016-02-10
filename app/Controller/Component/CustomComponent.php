@@ -56,6 +56,7 @@ class CustomComponent extends Component {
         $this->School = ClassRegistry::init('School');
         $this->GroupValue = ClassRegistry::init('GroupValue');
         $this->UploadHistory = ClassRegistry::init('UploadHistory');
+        $this->ClassInfo = ClassRegistry::init('ClassInfo');
         ini_set('memory_limit', '-1');
         ini_set('post_max_size', '64M');
         ini_set('upload_max_filesize', '64M');
@@ -196,6 +197,40 @@ class CustomComponent extends Component {
 
         return true;
     }
+    
+    /**
+     * FetchGroupValuesById
+     * @param $groupId
+     * @return array
+     * @throws NotFoundException When the view file could not be found
+     *    or MissingViewException in debug mode.
+     */
+    public function fetchGroupValuesById($groupId) {
+        $groupResult = $this->GroupValue->fetchGroupValuesById($groupId);
+        return $groupResult;
+    }
+    
+    /**
+     * FetchClassesForDropDown
+     * @param $instituteId
+     * @return array
+     * @throws NotFoundException When the view file could not be found
+     *    or MissingViewException in debug mode.
+     */
+    public function fetchClassesForDropDown($instituteId) {
+        $classResult = array();
+        if ($instituteId !="") {
+            $result = $this->ClassInfo->fetchClassInfosDetailsByInstituteId($instituteId);
+            if (!empty($result)) {
+                foreach($result as $k=>$res):
+                    $classResult[$res["ClassInfo"]["id"]] = ucwords(stripslashes($res["ClassInfo"]["name"]));
+                endforeach; 
+            }
+        }
+        return $classResult;
+    }
+    
+    
 }
 
 ?>

@@ -35,7 +35,7 @@ App::uses('File', 'Utility');
  */
 class InstitutesController extends AppController {
 
-    public $uses = array('Institute', 'UploadHistory');
+    public $uses = array('Institute', 'UploadHistory','InstituteSetting');
     public $components = array('NotificationEmail', 'DataTable', 'Custom', 'Csv');
 
     /**
@@ -47,6 +47,7 @@ class InstitutesController extends AppController {
     function beforeFilter() {
         $this->guestActions = array();
         $this->superadminActions = array('admin_index', 'admin_setup', 'admin_uploadInstituteData');
+        $this->instituteAdminActions = array('timings','settings');
         $this->adminActions = array();
         $this->userActions = array();
         parent::beforeFilter();
@@ -270,6 +271,44 @@ class InstitutesController extends AppController {
     public function admin_uploadHistories() {
         $historyList = $this->UploadHistory->getUploadHistoryListByType(3001);
         $this->set(compact('historyList'));
+    }
+    
+    /**
+     * Institute Timings
+     * @return void
+     * @throws NotFoundException When the view file could not be found
+     *    or MissingViewException in debug mode.
+     */
+    public function timings() {
+        $weekData = $this->Custom->fetchGroupValuesById(9000);
+        $this->set("weekData",$weekData);
+    }
+    
+    /**
+     * Institute Settings
+     * @return void
+     * @throws NotFoundException When the view file could not be found
+     *    or MissingViewException in debug mode.
+     */
+    public function settings() {
+        if (!empty($this->request->data)) {
+            $data = $this->request->data;
+            if ($this->InstituteSetting->save($data)) {
+                $this->_setFlashMsgs(__('Institute Settings Saved Successfully'), 'success');
+                $this->redirect($this->UserAuth->redirect());
+            } else {
+                $msg = __('Saving failed due to below errors!');
+                $this->_setFlashMsgs($msg, 'danger');
+            }
+        }
+        $result = $this->InstituteSetting->fetchSettingDetailsByInstituteId($this->instituteId);
+        $this->request->data = $result;
+        $breakTimes = array(5 => '5 minutes', 10 => '10 minutes',15 => '15 minutes');
+        $lunchTimes = array(30 => '30 minutes',45 => '45 minutes', 60 => 'Hourly');
+        $periodTimes = array(30 => '30 minutes',45 => '45 minutes', 60 => 'Hourly');
+        $maxAllowedPeriods = array(4 => '4 Periods',5 => '5 Periods', 6 => '6 Periods',7=> '7 Periods',8=>'8 Periods');
+        $this->set(compact("breakTimes","lunchTimes","periodTimes","maxAllowedPeriods"));
+        
     }
 
 }

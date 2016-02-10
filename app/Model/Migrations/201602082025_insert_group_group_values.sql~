@@ -1,0 +1,2 @@
+insert into groups (id,name,description,time_created) values(9000,'Week Days','Week Days','2016-02-08 20:25:00');
+insert into group_values(id,group_id,name,description,time_created) values(9001,9000,'Monday','Week Days','2016-02-08 20:28:00'),(9002,9000,'Tuesday','Week Days','2016-02-08 20:28:00'),(9003,9000,'Wednesday','Week Days','2016-02-08 20:28:00'),(9004,9000,'Thursday','Week Days','2016-02-08 20:31:00'),(9005,9000,'Friday','Week Days','2016-02-08 20:28:00'),(9006,9000,'Saturday','Week Days','2016-02-08 20:28:00');

@@ -56,11 +56,14 @@
         <li class="<?php echo (trim($this->params['controller']) == 'events' && (trim($this->action) == 'index'))?'active':""; ?>"><a href="<?php echo $this->Html->Url(array("controller"=>"events","action"=>"index"));?>"><?php echo __("Manage Events");?></a></li>
     </ul>
 </li>
-<li class="<?php echo (trim($this->params['controller']) == 'holidays')?'active':""; ?>">
-    <a href="#"><i class="fa fa-user-md"></i> <span class="nav-label"><?php echo __("Holidays");?></span><span class="fa arrow"></span></a>
+<li class="<?php echo (trim($this->params['controller']) == 'classes' || trim($this->params['controller']) == 'sections' || trim($this->params['controller']) == 'holidays' || (trim($this->params['controller']) == 'institutes' && (trim($this->params['action']) == 'timings' || trim($this->params['action']) == 'settings')))?'active':""; ?>">
+    <a href="#"><i class="fa fa-user-md"></i> <span class="nav-label"><?php echo __("Settings");?></span><span class="fa arrow"></span></a>
     <ul class="nav nav-second-level collapse">
-        <li class="<?php echo (trim($this->params['controller']) == 'holidays' && (trim($this->action) == 'setup'))?'active':""; ?>"><a href="<?php echo $this->Html->Url(array("controller"=>"holidays","action"=>"setup"));?>"><?php echo __("Add Holiday");?></a></li>
-        <li class="<?php echo (trim($this->params['controller']) == 'holidays' && (trim($this->action) == 'index'))?'active':""; ?>"><a href="<?php echo $this->Html->Url(array("controller"=>"holidays","action"=>"index"));?>"><?php echo __("Manage Holidays");?></a></li>
+        <li class="<?php echo (trim($this->params['controller']) == 'institutes' && trim($this->action) == 'timings')?'active':""; ?>"><a href="<?php echo $this->Html->Url(array("controller"=>"institutes","action"=>"timings"));?>"><?php echo __("Timings");?></a></li>
+        <li class="<?php echo (trim($this->params['controller']) == 'institutes' && trim($this->action) == 'settings')?'active':""; ?>"><a href="<?php echo $this->Html->Url(array("controller"=>"institutes","action"=>"settings"));?>"><?php echo __("Settings");?></a></li>
+        <li class="<?php echo (trim($this->params['controller']) == 'holidays' && (trim($this->action) == 'index' || trim($this->action) == 'setup'))?'active':""; ?>"><a href="<?php echo $this->Html->Url(array("controller"=>"holidays","action"=>"index"));?>"><?php echo __("Holidays");?></a></li>
+        <li class="<?php echo (trim($this->params['controller']) == 'classes' && (trim($this->action) == 'index' || trim($this->action) == 'setup'))?'active':""; ?>"><a href="<?php echo $this->Html->Url(array("controller"=>"classes","action"=>"index"));?>"><?php echo __("Classes");?></a></li>
+        <li class="<?php echo (trim($this->params['controller']) == 'sections' && (trim($this->action) == 'index' || trim($this->action) == 'setup'))?'active':""; ?>"><a href="<?php echo $this->Html->Url(array("controller"=>"sections","action"=>"index"));?>"><?php echo __("Sections");?></a></li>
     </ul>
 </li>
 <li>

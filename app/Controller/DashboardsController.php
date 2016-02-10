@@ -93,7 +93,7 @@ class DashboardsController extends AppController {
     public function school_account($schoolId) {
         $isExists = $this->School->isSchoolExistsById($schoolId);
         if ($isExists) {
-            $this->Session->write('schoolId', $schoolId);
+            $this->Session->write('institute_id', $schoolId);
             return $this->redirect(array('controller' => 'galleries', 'action' => 'school_index'));
         } else {
             return $this->redirect(array('controller' => 'schools', 'action' => 'admin_index'));

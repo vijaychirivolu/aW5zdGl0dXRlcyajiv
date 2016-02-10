@@ -103,8 +103,7 @@ class AppController extends Controller {
         } else {
             $this->userName = ucwords(stripslashes($this->UserAuth->user('first_name')))." ".ucwords(stripslashes($this->UserAuth->user('last_name')));
         }
-        $this->instituteId = ($this->Session->check('instituteId')) ? $this->Session->read('instituteId') : $this->UserAuth->user("institute_id");
-        
+        $this->instituteId = ($this->Session->check('institute_id')) ? $this->Session->read('institute_id') : $this->UserAuth->user("institute_id");
         $this->set('userId', $this->userId);
         $this->set('userRole', $this->userRole);
         $this->set('instituteId', $this->instituteId);
