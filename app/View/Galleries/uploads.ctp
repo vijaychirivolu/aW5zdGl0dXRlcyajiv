@@ -57,14 +57,9 @@
                             'enctype' => 'multipart/form-data',
                             'novalidate',
                             "id" => "my-awesome-dropzone",
-                            'url' => array('controller' => "galleries", 'action' => "school_uploads")
+                            'url' => array('controller' => "galleries", 'action' => "uploads",$galleryId)
                         ));
                       ?>
-                        <div class="form-group">
-                            <div class="col-lg-4">
-                                <input type="text" name="name" class="form-control" placeholder="Folder Name">
-                            </div>
-                        </div>
                         <div class="dropzone-previews"></div>
                         <?php
                             echo $this->AppForm->button(__("Submit this form!"), array(

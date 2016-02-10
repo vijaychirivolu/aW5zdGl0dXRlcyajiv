@@ -34,7 +34,7 @@ App::uses('AppModel', 'Model');
  * @link        http://localhost/cacsv2/index
  */
 class ClassInfo extends AppModel {
-    
+
     public $name = 'ClassInfo';
     public $validate = array(
         'name' => array(
@@ -76,6 +76,7 @@ class ClassInfo extends AppModel {
             )
         )
     );
+
     /**
      * Before Save Insert or Update
      * @param array $options Request Arguments
@@ -96,7 +97,7 @@ class ClassInfo extends AppModel {
         $this->data[$this->alias]['institute_id'] = ($instituteId != "") ? $instituteId : 0;
         return parent::beforeSave($options);
     }
-    
+
     /**
      * AlphaNumericDashUnderscore
      * @param type $check
@@ -110,8 +111,8 @@ class ClassInfo extends AppModel {
 
         return preg_match('/^([a-zA-Z\s\_\-\.]+)$/', $value);
     }
-    
-     /**
+
+    /**
      * Entered state exist or not: function is used on create
      * @param array $field Entered state is existing or not
      * @return boolean If returns true state exist, other wise state availble
@@ -121,12 +122,12 @@ class ClassInfo extends AppModel {
     public function classExist($field = array()) {
         $instituteId = AuthComponent::user('institute_id');
         $cnt = $this->find('count', array('conditions' => array(
-            'ClassInfo.name' => addslashes($this->data['ClassInfo']['name']),
-            'ClassInfo.institute_id' => $instituteId,
-            'ClassInfo.row_status' => 1
+                'ClassInfo.name' => addslashes($this->data['ClassInfo']['name']),
+                'ClassInfo.institute_id' => $instituteId,
+                'ClassInfo.row_status' => 1
             )
-            )
-                );
+                )
+        );
         return ($cnt >= 1) ? FALSE : TRUE;
     }
 
@@ -140,14 +141,13 @@ class ClassInfo extends AppModel {
     public function classExistOnUpdate($field = array()) {
         $instituteId = AuthComponent::user('institute_id');
         $cnt = $this->find('count', array('conditions' => array(
-            'ClassInfo.name' => addslashes($this->data['ClassInfo']['name']),
-            'ClassInfo.id <>' => $this->data['ClassInfo']['id'],
-            'ClassInfo.institute_id' => $instituteId,
-            'ClassInfo.row_status' => 1)));
+                'ClassInfo.name' => addslashes($this->data['ClassInfo']['name']),
+                'ClassInfo.id <>' => $this->data['ClassInfo']['id'],
+                'ClassInfo.institute_id' => $instituteId,
+                'ClassInfo.row_status' => 1)));
         return ($cnt >= 1) ? FALSE : TRUE;
     }
 
-    
     /**
      * Update query based on condtions
      * @param array $updateData which data has been updated
@@ -168,7 +168,7 @@ class ClassInfo extends AppModel {
         }
         //catch method ends
     }
-    
+
     /**
      * Query for fetchSettingDetailsByUserId
      * @param int $id Id for which information fetched
@@ -180,9 +180,9 @@ class ClassInfo extends AppModel {
         try {
             $result = $this->find("all", array(
                 'conditions' => array(
-                'ClassInfo.row_status' => 1,
-                'ClassInfo.institute_id' => $instituteId
-            )
+                    'ClassInfo.row_status' => 1,
+                    'ClassInfo.institute_id' => $instituteId
+                )
             ));
             return (!empty($result)) ? $result : array();
         }
@@ -194,7 +194,7 @@ class ClassInfo extends AppModel {
         }
         //catch method ends
     }
-    
+
     /**
      * Query for fetchClassInfosDetailsById
      * @param int $id Id for which information fetched
@@ -206,9 +206,9 @@ class ClassInfo extends AppModel {
         try {
             $result = $this->find("first", array(
                 'conditions' => array(
-                'ClassInfo.row_status' => 1,
-                'ClassInfo.id' => $id
-            )
+                    'ClassInfo.row_status' => 1,
+                    'ClassInfo.id' => $id
+                )
             ));
             return (!empty($result)) ? $result : array();
         }
@@ -219,6 +219,48 @@ class ClassInfo extends AppModel {
             return false;
         }
         //catch method ends
+    }
+
+    /**
+     * Query for fetchClassSectionsResultsByInstitueId
+     * @param int $instituteId Id for which information fetched
+     * @return array
+     * @throws NotFoundException When the view file could not be found
+     *    or MissingViewException in debug mode.
+     */
+    public function fetchClassSectionsResultsByInstitueId($instituteId) {
+        try {
+            $result = $this->find("all", array(
+                "fields" => array(
+                    "ClassInfo.id",
+                    "ClassInfo.name",
+                    "Section.id",
+                    "Section.name"
+                ),
+                'joins' => array(
+                    array(
+                        'table' => "sections",
+                        "alias" => "Section",
+                        "conditions" => array(
+                            'ClassInfo.id = Section.class_id',
+                            "Section.row_status" => 1
+                        )
+                    )
+                ),
+                'conditions' => array(
+                    'ClassInfo.row_status' => 1,
+                    'ClassInfo.institute_id' => $instituteId
+                ),
+                'order' => 'ClassInfo.id asc'
+            ));
+            return (!empty($result)) ? $result : array();
+        }
+        //try method ends
+        //catch method starts
+        catch (Exception $e) {
+            //log_message('error', $this->db->_error_message()); //error message when query is wrong
+            return false;
+        }
     }
 
 }

@@ -48,7 +48,7 @@ class HolidaysController extends AppController {
         $this->adminActions = array();
         $this->userActions = array();
         parent::beforeFilter();
-        $this->UserAuth->allow();
+        $this->UserAuth->allow('');
         $this->set('active_tab', 'holidays');
         if ($this->request->is('ajax')) {
             $this->layout = false;

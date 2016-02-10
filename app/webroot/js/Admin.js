@@ -69,6 +69,8 @@ var Admin = function () {
         initUserAjaxDataTables();
         initDateRangePicker();
         initDatePicker();
+        initStudentAjaxDataTables();
+        initClassSectionMultiple();
     }
 
 
@@ -83,7 +85,7 @@ var Admin = function () {
         ajaxFormSubmit();
         initCustomBrowseButton();
     }
-    
+
     /**
      * 
      * @returns {undefined}
@@ -96,7 +98,7 @@ var Admin = function () {
             format: "dd/mm/yyyy"
         });
     }
-    
+
     /**
      * 
      * @returns {undefined}
@@ -696,6 +698,91 @@ var Admin = function () {
         });
     }
 
+
+
+    /**
+     * initAjaxDataTable
+     * @returns void
+     */
+    function initStudentAjaxDataTables() {
+        $("#studentSearchFilterForm").validate({
+            rules: {
+            },
+            messages: {
+            },
+            submitHandler: function (form) {
+                $("#student-table-results").removeClass("table-none");
+                $("#studentsResultsByFilters").dataTable().fnDestroy();
+                //do something here
+                $("#studentsResultsByFilters").DataTable({
+                    "dom": 'T<"clear">lfrtip',
+                    "oTableTools": {
+                        "sSwfPath": SITEURL + "js/plugins/dataTables/swf/copy_csv_xls_pdf.swf",
+                        "aButtons": [
+                            {
+                                "sExtends": "copy",
+                                "mColumns": [0, 1, 2, 3, 4]
+                            },
+                            {
+                                "sExtends": "csv",
+                                "mColumns": [0, 1, 2, 3, 4]
+                            },
+                            {
+                                "sExtends": "xls",
+                                "sFileName": "*.xls",
+                                "bFooter": false,
+                                "mColumns": [0, 1, 2, 3, 4]
+                            },
+                            {
+                                "sExtends": "pdf",
+                                "mColumns": [0, 1, 2, 3, 4]
+                            },
+                            {
+                                "sExtends": "print",
+                                "mColumns": [0, 1, 2, 3, 4]
+                            }
+                        ]
+                    },
+                    "responsive": true,
+                    "iDisplayLength": 10,
+                    'bProcessing': true,
+                    'bServerSide': true,
+                    "order": [[0, "asc"]],
+                    "oLanguage": {
+                        "oPaginate": {
+                            "sNext": "<i class='fa fa-arrow-right custom-right'></i>",
+                            "sPrevious": "<i class='fa fa-arrow-left custom-right'></i>"
+                        }
+                    },
+                    'sAjaxSource': SITEURL + 'students/resultsByFilters.json',
+                    "fnServerParams": function (aoData) {
+                        aoData.push({name: "Student", value: $('#studentSearchFilterForm').serialize()});
+                    },
+                    "aoColumns": [
+                        {mData: "Student.name"},
+                        {mData: "Student.admission_no"},
+                        {mData: "ClassInfo.name"},
+                        {mData: "Section.name"},
+                        {mData: "Student.date_of_joining"},
+                        {mData: "Student.id"}
+                    ],
+                    "fnRowCallback": function (nRow, aData, iDisplayIndex, iDisplayIndexFull) {
+                    },
+                    "fnDrawCallback": function () {
+                        confirmMessageAlerts();
+                    }
+                });
+                return false;
+            }
+        });
+
+
+    }
+
+    function initStudentResultsByFilters() {
+
+    }
+
     /**
      * Init Data table
      * 
@@ -806,12 +893,7 @@ var Admin = function () {
                         type: "success"
                     },
                     function () {
-                        if (jsonData.callback.prefix) {
-                            window.location.href = SITEURL + jsonData.callback.module + "/" + jsonData.callback.controller + "/" + jsonData.callback.action;
-                        } else {
-                            window.location.href = SITEURL + jsonData.callback.controller + "/" + jsonData.callback.action;
-                        }
-
+                        window.location.href = SITEURL + jsonData.callback.controller + "/" + jsonData.callback.action + "/" + jsonData.callback.id;
                     });
                 });
                 this.on("errormultiple", function (files, response) {
@@ -883,5 +965,10 @@ var Admin = function () {
                 element.before(error);
             }
         });
+    }
+    
+    function initClassSectionMultiple() {
+        var options = { sortable: true }; 
+        $("select#demo1").treeMultiselect(options);
     }
 }();

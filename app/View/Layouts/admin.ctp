@@ -52,6 +52,9 @@
             
             echo $this->Html->css('plugins/awesome-bootstrap-checkbox/awesome-bootstrap-checkbox');
             echo $this->Html->css('plugins/datapicker/datepicker3');
+            
+            echo $this->Html->css('plugins/tree-multiselect/jquery.tree-multiselect');
+            
             echo $this->Html->css('developer');
         ?>
         <script>
@@ -104,7 +107,7 @@
             echo $this->Html->script('plugins/summernote/summernote.min');
             echo $this->Html->script('https://maps.googleapis.com/maps/api/js?v=3.exp&libraries=places');
             echo $this->Html->script('plugins/iCheck/icheck.min');
-            
+            echo $this->Html->script('plugins/tree-multiselect/jquery.tree-multiselect');
             echo $this->Html->script('Admin');
         ?>
     </body>

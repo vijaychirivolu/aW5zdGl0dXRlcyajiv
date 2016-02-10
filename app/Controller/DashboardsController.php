@@ -33,7 +33,7 @@ App::uses('AppController', 'Controller');
  */
 class DashboardsController extends AppController {
 
-    public $uses = array('School');
+    public $uses = array('Institute');
     public $components = array('NotificationEmail');
 
     /**
@@ -46,11 +46,11 @@ class DashboardsController extends AppController {
         $this->guestActions = array();
         $this->superadminActions = array('admin_index','school_account');
         $this->adminActions = array();
-        $this->schoolAdminActions = array('index');
-        $this->branchActions = array('index');
+        $this->instituteAdminActions = array('index');
+        $this->branchActions = array();
         $this->userActions = array();
         parent::beforeFilter();
-        $this->UserAuth->allow();
+        $this->UserAuth->allow('');
         $this->set('active_tab', 'users');
         if ($this->request->is('ajax')) {
             $this->layout = false;
@@ -76,7 +76,6 @@ class DashboardsController extends AppController {
      *    or MissingViewException in debug mode.
      */
     public function admin_index() {
-        
     }
     
     /**
@@ -87,7 +86,6 @@ class DashboardsController extends AppController {
      *    or MissingViewException in debug mode.
      */
     public function index() {
-        
     }
 
     public function school_account($schoolId) {

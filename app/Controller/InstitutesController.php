@@ -51,7 +51,7 @@ class InstitutesController extends AppController {
         $this->adminActions = array();
         $this->userActions = array();
         parent::beforeFilter();
-        $this->UserAuth->allow();
+        $this->UserAuth->allow('');
         $this->set('active_tab', 'users');
         if ($this->request->is('ajax')) {
             $this->layout = false;

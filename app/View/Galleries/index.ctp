@@ -34,63 +34,35 @@
     </div>
     <div class="col-lg-2"></div>
 </div>
-<div class="wrapper wrapper-content">
+<div class="wrapper wrapper-content animated fadeInRight">
     <div class="row">
-        <div class="col-lg-3">
-            <div class="ibox float-e-margins">
-                <div class="ibox-content">
-                    <div class="file-manager">
-                        <h5>Show:</h5>
-                        <div class="hr-line-dashed"></div>
-                        <a class="btn btn-primary btn-block" href="<?php echo $this->Html->Url(array("controller"=>"galleries","action"=>"school_uploads"));?>"><?php echo __("Upload Files");?></a>
-                        <div class="hr-line-dashed"></div>
-                        <h5>Folders</h5>
-                        <?php if (!empty($galleriesResult)) {?>
-                            <ul class="folder-list" style="padding: 0">
-                                <li><a href="<?php echo $this->Html->Url(array("controller"=>"galleries","action"=>"index"));?>"><i class="fa fa-folder"></i> <?php echo __("All");?></a></li>
-                                <?php foreach($galleriesResult as $key=>$res):?> 
-                                <li><a href="<?php echo $this->Html->Url(array("controller"=>"galleries","action"=>"index",$res["Gallery"]["id"]));?>"><i class="fa fa-folder"></i> <?php echo ucwords(stripslashes($res["Gallery"]["name"]));?></a></li>
-                                <?php endforeach;?>
-                            </ul>
-                        <?php } else {
-                            echo '<p>'.__("No folders found").'.</p>';
-                        }?>  
-                        <div class="clearfix"></div>
+        <?php if(!empty($galleriesResult)) {
+            foreach ($galleriesResult as $key=>$res):?>
+                <div class="col-md-3">
+                    <div class="ibox">
+                        <div class="ibox-content product-box albums">
+
+                            <div class="product-imitation">
+                                <?php echo $this->Html->image("/files/galleries/1455106638_1_1.jpg",array(
+                                    "alt" => ucwords(stripslashes($res["Gallery"]["name"])),
+                                    "class" => "img-responsive"
+                                ));?>
+                            </div>
+                            <div class="product-desc">
+                                <a href="<?php echo $this->Html->Url(array("controller"=>"galleries","action"=>"images",$res["Gallery"]["id"]));?>" class="product-name"><?php echo ucwords(stripslashes($res["Gallery"]["name"]));?></a>
+                                <div class="small m-t-xs">
+                                    <?php 
+                                        echo date("M d, Y",strtotime($res["Gallery"]["time_created"]));
+                                    ?>
+                                </div>
+                                <div class="m-t text-righ">
+                                    <a href="<?php echo $this->Html->Url(array("controller"=>"galleries","action"=>"uploads",$res["Gallery"]["id"]));?>" class="btn btn-xs btn-outline btn-primary"><?php echo __("Upload Files");?> <i class="fa fa-long-arrow-right"></i> </a>
+                                </div>
+                            </div>
+                        </div>
                     </div>
                 </div>
-            </div>
-        </div>
-        <div class="col-lg-9 animated fadeInRight">
-            <div class="row">
-                <div class="col-lg-12">
-                    <?php if (!empty($galleryImages)) {?>
-                            <?php foreach($galleryImages as $key=>$row):?> 
-                                    <div class="file-box">
-                                        <div class="file">
-                                            <a href="#">
-                                                <span class="corner"></span>
-
-                                                <div class="image">
-                                                    <?php echo $this->Html->image("/files/galleries/".$row["GalleryImage"]["filename"],array(
-                                                        "alt" => ucwords(stripslashes($row["GalleryImage"]["original_filename"])),
-                                                        "class" => "img-responsive"
-                                                    ));?>
-                                                </div>
-                                                <div class="file-name">
-                                                    <?php echo ucwords(stripslashes($row["GalleryImage"]["original_filename"]));?>
-                                                    <br/>
-                                                    <small><?php echo __("Added");?>: <?php echo date("M d, Y",strtotime($row["GalleryImage"]["time_created"]));?></small>
-                                                </div>
-                                            </a>
-
-                                        </div>
-                                    </div>
-                            <?php endforeach;?>
-                    <?php } else {
-                        echo '<p>'.__("No folders found").'.</p>';
-                    }?>  
-                </div>
-            </div>
-        </div>
+            <?php endforeach;
+        } ?>
     </div>
 </div>

@@ -45,8 +45,8 @@
 <li class="<?php echo (trim($this->params['controller']) == 'galleries')?'active':""; ?>">
     <a href="#"><i class="fa fa-user-md"></i> <span class="nav-label"><?php echo __("Galleries");?></span><span class="fa arrow"></span></a>
     <ul class="nav nav-second-level collapse">
-        <li class="<?php echo (trim($this->params['controller']) == 'galleries' && (trim($this->action) == 'index'))?'active':""; ?>"><a href="<?php echo $this->Html->Url(array("controller"=>"galleries","action"=>"index"));?>"><?php echo __("Manage Galleries");?></a></li>
-        <li class="<?php echo (trim($this->params['controller']) == 'galleries' && (trim($this->action) == 'manage'))?'active':""; ?>"><a href="<?php echo $this->Html->Url(array("controller"=>"employees","action"=>"manage"));?>"><?php echo __("Manage Employees");?></a></li>
+        <li class="<?php echo (trim($this->params['controller']) == 'galleries' && (trim($this->action) == 'setup'))?'active':""; ?>"><a href="<?php echo $this->Html->Url(array("controller"=>"galleries","action"=>"setup"));?>"><?php echo __("Create Gallery");?></a></li>
+        <li class="<?php echo (trim($this->params['controller']) == 'galleries' && (trim($this->action) == 'index' || trim($this->action) == 'images' || trim($this->action) == 'uploads'))?'active':""; ?>"><a href="<?php echo $this->Html->Url(array("controller"=>"galleries","action"=>"index"));?>"><?php echo __("Manage Galleries");?></a></li>
     </ul>
 </li>
 <li class="<?php echo (trim($this->params['controller']) == 'employees')?'active':""; ?>">

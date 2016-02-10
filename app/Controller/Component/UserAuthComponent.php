@@ -37,8 +37,8 @@ class UserAuthComponent extends AuthComponent {
         if ($url !== null) {
             $redir = $url;
         } else {
-            $userType = $this->user('user_role');
-            switch ($userType) {
+            $userRole = $this->user('user_role');
+            switch ($userRole) {
                 case 1001:
                     $redir = '/admin/dashboards/index';
                     break;
@@ -61,7 +61,7 @@ class UserAuthComponent extends AuthComponent {
                     $redir = '/admin/dashboards/index';
                     break;
                 default:
-                    $redir = '/admin/dashboards/index';
+                    $redir = '/users/login';
                     break;
             }
         }

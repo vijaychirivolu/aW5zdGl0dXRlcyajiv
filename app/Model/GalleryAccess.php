@@ -1,7 +1,7 @@
 <?php
 
 /**
- * Gallery Model
+ * GalleryAccess Model
  *
  * PHP version 5
  *
@@ -11,7 +11,7 @@
  * the PHP License and are unable to obtain it through the web, please
  * send a note to license@php.net so we can mail you a copy immediately.
  *
- * @category    GalleryModel
+ * @category    GalleryAccessModel
  * @package     Models
  * @author      Vijay.Ch <vijay.ch@vendus.com>
  * @license     http://www.opensource.org/licenses/mit-license.php MIT License
@@ -23,19 +23,19 @@
 App::uses('AppModel', 'Model');
 
 /**
- * Gallery Model
+ * GalleryAccess Model
  *
- * @category    GalleryModel
+ * @category    GalleryAccessModel
  * @package     Models
  * @author      Vijay.Ch <vijay.ch@vendus.com>
- * @fileName    GalleryModel.php
+ * @fileName    GalleryAccessModel.php
  * @description Used for user queies and validations
  * @license     http://www.opensource.org/licenses/mit-license.php MIT License
  * @link        http://localhost/cacsv2/index
  */
-class Gallery extends AppModel {
+class GalleryAccess extends AppModel {
     
-    public $name = 'Gallery';
+    public $name = 'GalleryAccess';
     /**
      * Before Save Insert or Update
      * @param array $options Request Arguments
@@ -50,13 +50,8 @@ class Gallery extends AppModel {
         }
         $userId = AuthComponent::user('id');
         $this->data[$this->alias]['requested_by'] = ($userId != "") ? $userId : 0;
-        $this->data[$this->alias]['user_id'] = ($userId != "") ? $userId : 0;
-        
         $userSessionId = AuthComponent::user('user_session_id');
         $this->data[$this->alias]['user_session_id'] = ($userSessionId != "") ? $userSessionId : 0;
-        $instituteId = AuthComponent::user('institute_id');
-        $this->data[$this->alias]['institute_id'] = ($instituteId != "") ? $instituteId : 0;
-        
         return parent::beforeSave($options);
     }
 
@@ -69,7 +64,7 @@ class Gallery extends AppModel {
      * @throws NotFoundException When the view file could not be found
      *    or MissingViewException in debug mode.
      */
-    public function updateGalleryDetails($updateData, $conditions) {
+    public function updateGalleryAccessDetails($updateData, $conditions) {
         try {
             return $this->updateAll($updateData, $conditions);
         }
@@ -81,52 +76,5 @@ class Gallery extends AppModel {
         }
         //catch method ends
     }
-    
-    /**
-     * FetchAllGalleriesByConditions
-     * @param array $conditions which id we need to update
-     * @return array
-     * @throws NotFoundException When the view file could not be found
-     *    or MissingViewException in debug mode.
-     */
-    public function fetchAllGalleriesByConditions($conditions) {
-        try {
-            return $this->find("all",array(
-            'conditions' => $conditions,
-            'fields' => array(
-                'Gallery.id',
-                'Gallery.name',
-                'Gallery.description',
-                'Gallery.time_created'
-            ),
-            'order' => 'Gallery.id desc'
-            ));
-        }
-        //try method ends
-        //catch method starts
-        catch (Exception $e) {
-            //log_message('error', $this->db->_error_message()); //error message when query is wrong
-        }
-          
-    }
-    
-    /**
-     * IsGalleryExistsByName
-     * @param type $conditions
-     * @throws NotFoundException When the view file could not be found
-     *    or MissingViewException in debug mode.
-     */
-    public function isGalleryExists($conditions) {
-        try {
-            return $this->find("first",array(
-                'conditions' => $conditions
-            ));
-        }
-        //try method ends
-        //catch method starts
-        catch (Exception $e) {
-            //log_message('error', $this->db->_error_message()); //error message when query is wrong
-        }
-        
-    }
+
 }
