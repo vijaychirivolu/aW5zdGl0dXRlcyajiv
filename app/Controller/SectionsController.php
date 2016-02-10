@@ -35,7 +35,7 @@ class SectionsController extends AppController {
 
     public $uses = array('Section');
     public $components = array("Custom");
-    
+
     /**
      * Before filter
      * @return void
@@ -45,7 +45,7 @@ class SectionsController extends AppController {
     function beforeFilter() {
         $this->guestActions = array();
         $this->superadminActions = array();
-        $this->instituteAdminActions = array('index','setup','delete');
+        $this->instituteAdminActions = array('index', 'setup', 'delete');
         $this->adminActions = array();
         $this->userActions = array();
         parent::beforeFilter();
@@ -75,8 +75,12 @@ class SectionsController extends AppController {
      *    or MissingViewException in debug mode.
      */
     public function index() {
-        $sectionsList = $this->Section->fetchSectionsDetailsByInstituteId($this->instituteId);
-        $this->set(compact("sectionsList"));
+        if ($this->instituteId != "") {
+            $sectionsList = $this->Section->fetchSectionsDetailsByInstituteId($this->instituteId);
+            $this->set(compact("sectionsList"));
+        } else {
+            $this->redirect($this->UserAuth->redirect());
+        }
     }
 
     /**
@@ -87,34 +91,38 @@ class SectionsController extends AppController {
      *    or MissingViewException in debug mode.
      */
     public function setup($id = 0) {
-        $postData = $this->request->data;
-        $classResult = $this->Custom->fetchClassesForDropDown($this->instituteId);
-        if (!empty($postData)) {
-            if ($this->Section->validates()) {
-                if ($this->Section->save($postData)) {
-                    $msg = ($id > 0) ? __('The Class has been updated.') : __('The Class has been added.');
-                    if ($this->request->is('ajax')) {
-                        echo json_encode(array(
-                            'status' => "success",
-                            "message" => $msg,
-                            'callback' => array("prefix" => false, "controller" => "classes", "action" => "index")
-                        ));
-                        exit;
-                    } else {
-                        $this->_setFlashMsgs($msg, 'success');
-                        $this->redirect(array('action' => 'index'));
+        if ($this->instituteId != "") {
+            $postData = $this->request->data;
+            $classResult = $this->Custom->fetchClassesForDropDown($this->instituteId);
+            if (!empty($postData)) {
+                if ($this->Section->validates()) {
+                    if ($this->Section->save($postData)) {
+                        $msg = ($id > 0) ? __('The Class has been updated.') : __('The Class has been added.');
+                        if ($this->request->is('ajax')) {
+                            echo json_encode(array(
+                                'status' => "success",
+                                "message" => $msg,
+                                'callback' => array("prefix" => false, "controller" => "classes", "action" => "index")
+                            ));
+                            exit;
+                        } else {
+                            $this->_setFlashMsgs($msg, 'success');
+                            $this->redirect(array('action' => 'index'));
+                        }
                     }
                 }
+            } else {
+                if ($id > 0) {
+                    $result = $this->Section->fetchSectionDetailsById($id);
+                    $this->request->data = $result;
+                }
             }
+            $this->set(compact("id", "classResult"));
         } else {
-            if ($id > 0) {
-                $result = $this->Section->fetchSectionDetailsById($id);
-                $this->request->data = $result;
-            }
+            $this->redirect($this->UserAuth->redirect());
         }
-        $this->set(compact("id","classResult"));
     }
-    
+
     /**
      * Delete Sections
      * @param int $id Id for delete cms
@@ -161,6 +169,7 @@ class SectionsController extends AppController {
             exit;
         }
     }
+
 }
 
 ?>
