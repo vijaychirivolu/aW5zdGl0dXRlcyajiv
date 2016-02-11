@@ -15,23 +15,23 @@ $(document).ready(function () {
         checkboxClass: 'icheckbox_square-green',
         radioClass: 'iradio_square-green',
     });
-    $("#btnToggleSelect").click(function(){
-            $("#tree2").dynatree("getRoot").visit(function(node){
-                    node.toggleSelect();
-            });
-            return false;
+    $("#btnToggleSelect").click(function () {
+        $("#tree2").dynatree("getRoot").visit(function (node) {
+            node.toggleSelect();
+        });
+        return false;
     });
-    $("#btnDeselectAll").click(function(){
-            $("#tree2").dynatree("getRoot").visit(function(node){
-                    node.select(false);
-            });
-            return false;
+    $("#btnDeselectAll").click(function () {
+        $("#tree2").dynatree("getRoot").visit(function (node) {
+            node.select(false);
+        });
+        return false;
     });
-    $("#btnSelectAll").click(function(){
-            $("#tree2").dynatree("getRoot").visit(function(node){
-                    node.select(true);
-            });
-            return false;
+    $("#btnSelectAll").click(function () {
+        $("#tree2").dynatree("getRoot").visit(function (node) {
+            node.select(true);
+        });
+        return false;
     });
 });
 $(
@@ -89,6 +89,8 @@ var Admin = function () {
         initDatePicker();
         initStudentAjaxDataTables();
         initClassSectionMultiple();
+        initInstituteTimings();
+        instituteChangingHours();
     }
 
 
@@ -984,76 +986,130 @@ var Admin = function () {
             }
         });
     }
-    
+
     function initClassSectionMultiple() {
         var treeData = [
-		{title: "item1 with key and tooltip", tooltip: "Look, a tool tip!" },
-		{title: "item2: selected on init", select: true },
-		{title: "Folder", isFolder: true, key: "id3",
-			children: [
-				{title: "Sub-item 3.1",
-					children: [
-						{title: "Sub-item 3.1.1", key: "id3.1.1" },
-						{title: "Sub-item 3.1.2", key: "id3.1.2" }
-					]
-				},
-				{title: "Sub-item 3.2",
-					children: [
-						{title: "Sub-item 3.2.1", key: "id3.2.1" },
-						{title: "Sub-item 3.2.2", key: "id3.2.2" }
-					]
-				}
-			]
-		},
-		{title: "Document with some children (expanded on init)", key: "id4", expand: true,
-			children: [
-				{title: "Sub-item 4.1 (active on init)", activate: true,
-					children: [
-						{title: "Sub-item 4.1.1", key: "id4.1.1" },
-						{title: "Sub-item 4.1.2", key: "id4.1.2" }
-					]
-				},
-				{title: "Sub-item 4.2 (selected on init)", select: true,
-					children: [
-						{title: "Sub-item 4.2.1", key: "id4.2.1" },
-						{title: "Sub-item 4.2.2", key: "id4.2.2" }
-					]
-				},
-				{title: "Sub-item 4.3 (hideCheckbox)", hideCheckbox: true },
-				{title: "Sub-item 4.4 (unselectable)", unselectable: true }
-			]
-		}
-	];
+            {title: "item1 with key and tooltip", tooltip: "Look, a tool tip!"},
+            {title: "item2: selected on init", select: true},
+            {title: "Folder", isFolder: true, key: "id3",
+                children: [
+                    {title: "Sub-item 3.1",
+                        children: [
+                            {title: "Sub-item 3.1.1", key: "id3.1.1"},
+                            {title: "Sub-item 3.1.2", key: "id3.1.2"}
+                        ]
+                    },
+                    {title: "Sub-item 3.2",
+                        children: [
+                            {title: "Sub-item 3.2.1", key: "id3.2.1"},
+                            {title: "Sub-item 3.2.2", key: "id3.2.2"}
+                        ]
+                    }
+                ]
+            },
+            {title: "Document with some children (expanded on init)", key: "id4", expand: true,
+                children: [
+                    {title: "Sub-item 4.1 (active on init)", activate: true,
+                        children: [
+                            {title: "Sub-item 4.1.1", key: "id4.1.1"},
+                            {title: "Sub-item 4.1.2", key: "id4.1.2"}
+                        ]
+                    },
+                    {title: "Sub-item 4.2 (selected on init)", select: true,
+                        children: [
+                            {title: "Sub-item 4.2.1", key: "id4.2.1"},
+                            {title: "Sub-item 4.2.2", key: "id4.2.2"}
+                        ]
+                    },
+                    {title: "Sub-item 4.3 (hideCheckbox)", hideCheckbox: true},
+                    {title: "Sub-item 4.4 (unselectable)", unselectable: true}
+                ]
+            }
+        ];
         $('#tree').checktree();
         /*
-        $("#tree2").dynatree({
-            checkbox: true,
-            selectMode: 2,
-            children: treeData,
-            onSelect: function(select, node) {
-                    // Display list of selected nodes
-                    var selNodes = node.tree.getSelectedNodes();
-                    // convert to title/key array
-                    var selKeys = $.map(selNodes, function(node){
-                               return "[" + node.data.key + "]: '" + node.data.title + "'";
-                    });
-                    $("#echoSelection2").text(selKeys.join(", "));
-            },
-            onClick: function(node, event) {
-                    // We should not toggle, if target was "checkbox", because this
-                    // would result in double-toggle (i.e. no toggle)
-                    if( node.getEventTargetType(event) == "title" )
-                            node.toggleSelect();
-            },
-            onKeydown: function(node, event) {
-                    if( event.which == 32 ) {
-                            node.toggleSelect();
-                            return false;
+         $("#tree2").dynatree({
+         checkbox: true,
+         selectMode: 2,
+         children: treeData,
+         onSelect: function(select, node) {
+         // Display list of selected nodes
+         var selNodes = node.tree.getSelectedNodes();
+         // convert to title/key array
+         var selKeys = $.map(selNodes, function(node){
+         return "[" + node.data.key + "]: '" + node.data.title + "'";
+         });
+         $("#echoSelection2").text(selKeys.join(", "));
+         },
+         onClick: function(node, event) {
+         // We should not toggle, if target was "checkbox", because this
+         // would result in double-toggle (i.e. no toggle)
+         if( node.getEventTargetType(event) == "title" )
+         node.toggleSelect();
+         },
+         onKeydown: function(node, event) {
+         if( event.which == 32 ) {
+         node.toggleSelect();
+         return false;
+         }
+         },
+         // The following options are only required, if we have more than one tree on one page:
+         cookieId: "dynatree-Cb2",
+         idPrefix: "dynatree-Cb2-"
+         });*/
+    }
+
+    function initInstituteTimings() {
+        $(".institute_timings").each(function () {
+            var val = this.value;
+            if ($('#' + val + '_week').is(':checked') == true) {
+                $('#' + val + '-opening_hours').attr('disabled', false);
+                $('#' + val + '-closing_hours').attr('disabled', false);
+            } else {
+                $('#' + val + '-opening_hours').attr('disabled', true);
+                $('#' + val + '-closing_hours').attr('disabled', true);
+                $("select#" + val + "-opening_hours option[value='00:00']").attr("selected", "selected");
+                $("select#" + val + "-closing_hours option[value='00:00']").attr("selected", "selected");
+            }
+        });
+
+
+        $(".institute_timings").each(function () {
+            $(this).on('ifChecked', function () {
+                var val = this.value;
+                $('#' + val + '-opening_hours').attr('disabled', false);
+                $('#' + val + '-closing_hours').attr('disabled', false);
+            });
+            $(this).on('ifUnchecked', function () {
+                var val = this.value;
+                $('#' + val + '-opening_hours').attr('disabled', true);
+                $('#' + val + '-closing_hours').attr('disabled', true);
+                $("select#" + val + "-opening_hours option[value='00:00']").attr("selected", "selected");
+                $("select#" + val + "-closing_hours option[value='00:00']").attr("selected", "selected");
+            });
+        });
+    }
+
+    function instituteChangingHours() {
+        $(".ajax-changing-timings").each(function () {
+            $(this).change(function () {
+                var data = $(this).attr("id");
+                data = data.split("-");
+                var id = data[0];
+                var selected_value = $(this).val();
+                if (data[1] == "opening_hours") {
+                    var toValue = $("#" + id + "-closing_hours").val();
+                    if (toValue < selected_value) {
+                        $("#" + id + "-closing_hours").val(selected_value);
                     }
-            },
-            // The following options are only required, if we have more than one tree on one page:
-            cookieId: "dynatree-Cb2",
-            idPrefix: "dynatree-Cb2-"
-        });*/
+                } else {
+                    var fromValue = $("#" + id + "-opening_hours").val();
+                    if (fromValue > selected_value) {
+                        $("#" + id + "-opening_hours").val(selected_value);
+                    }
+
+                }
+            });
+        });
     }
 }();

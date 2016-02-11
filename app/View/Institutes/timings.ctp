@@ -51,53 +51,73 @@
                 <div class="col-sm-3 text-center"><strong>End Time</strong></div>
             </div>
                 <?php
-                    echo $this->AppForm->create('TimeSetting', array(
+                    echo $this->AppForm->create('InstituteTiming', array(
                         'class' => 'form-horizontal', 
                         'method' => 'post',
                         'enctype' => 'multipart/form-data',
                         'novalidate'
                     ));
-                    echo $this->AppForm->hidden("id");
                 ?>
-                <?php foreach($weekData as $key=>$val){
-                    if(isset($val['GroupValue']) && count($val['GroupValue'])){?>
+                <?php 
+                if (!empty($instituteHours)) {     
+                foreach($instituteHours as $key=>$row) { ?>
                     <div class="form-group">
                         <div class="col-sm-3">
                             <?php
-                            echo  $this->AppForm->input($val['GroupValue']['name'],array(
+                            echo  $this->AppForm->input($key.'.InstituteTiming.week_id',array(
                                 'type'=>'checkbox',
-                                'class'=>'i-checks',
-                                'value'=>$val['GroupValue']['id'],
-                                //'label'=>false,
-                                'div'=>false
+                                'multiple' => 'checkbox',
+                                'class'=>'i-checks institute_timings',
+                                'label' => array('text' => __($row['GroupValue']['name'])),
+                                'value'=>$row['GroupValue']['id'],
+                                'div'=>false,
+                                'hiddenField'=>false,
+                                'id' => $row['GroupValue']['id']."_week",
+                                'default' => (isset($row["GroupValue"]["checked_values"]) && $row["GroupValue"]["checked_values"]["week_id"] == $row["GroupValue"]["id"])?true:false,
                             ));                            
                             ?>
                         </div>
                         <div class="col-sm-3">
                             <?php
-                            echo  $this->AppForm->input('start_date',array(
+                            echo  $this->AppForm->input($key.'.InstituteTiming.opening_hours',array(
                                 'type'=>'select',
-                                'class'=>'form-control m-b',
+                                'class'=>'form-control m-b ajax-changing-timings',
                                 'label'=>false,
                                 'div'=>false,
-                                'options'=>$timings
+                                'options'=>$timings,
+                                'id' => $row['GroupValue']['id']."-opening_hours",
+                                'default' => (isset($row["GroupValue"]["checked_values"]))?date("H:i",strtotime($row["GroupValue"]["checked_values"]['opening_hours'])):"00:00"                              
                             ));
                             ?>
                         </div>
                         <div class="col-sm-3">
                             <?php
-                            echo  $this->AppForm->input('start_date',array(
+                            echo  $this->AppForm->input($key.'.InstituteTiming.closing_hours',array(
                                 'type'=>'select',
-                                'class'=>'form-control m-b',
+                                'class'=>'form-control m-b ajax-changing-timings',
                                 'label'=>false,
                                 'div'=>false,
-                                'options'=>$timings
+                                'id' => $row['GroupValue']['id']."-closing_hours",
+                                'options'=>$timings,
+                                'default' => (isset($row["GroupValue"]["checked_values"]))?date("H:i",strtotime($row["GroupValue"]["checked_values"]['closing_hours'])):"00:00"                              
+                                
                             ));
                             ?>
                         </div>
+                        
                     </div>
                 <?php } }?>
-                    
+                 <div class="form-group">
+                    <div class="col-sm-4 col-sm-offset-4">
+                        <?php echo $this->Html->link(_("Cancel"),array("controller"=>"dashboards","action"=>"index"),array("class"=>"btn btn-white"));?>
+                        <?php
+                            echo $this->AppForm->button(__("Save changes"), array(
+                                'class' => 'btn btn-primary',
+                                'type' => 'submit',
+                            ));
+                        ?>
+                    </div>
+                </div>   
                 <?php echo $this->AppForm->end(); ?>
             </div>
         </div>
