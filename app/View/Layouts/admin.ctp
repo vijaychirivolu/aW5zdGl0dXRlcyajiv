@@ -55,7 +55,7 @@
             
             echo $this->Html->css('plugins/tree-multiselect/jquery.tree-multiselect');
             echo $this->Html->css('plugins/iCheck/custom');
-            
+            echo $this->Html->css('jquery-checktree');
             echo $this->Html->css('developer');
         ?>
         <script>
@@ -109,6 +109,7 @@
             echo $this->Html->script('https://maps.googleapis.com/maps/api/js?v=3.exp&libraries=places');
             echo $this->Html->script('plugins/iCheck/icheck.min');
             echo $this->Html->script('plugins/tree-multiselect/jquery.tree-multiselect');
+            echo $this->Html->script('jquery-checktree');
             echo $this->Html->script('Admin');
         ?>
     </body>

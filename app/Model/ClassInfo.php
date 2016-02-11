@@ -253,7 +253,13 @@ class ClassInfo extends AppModel {
                 ),
                 'order' => 'ClassInfo.id asc'
             ));
-            return (!empty($result)) ? $result : array();
+            $temp = array();
+            if (!empty($result)) {
+                foreach($result as $k=>$res):
+                    $temp[$res["ClassInfo"]["name"]][] = $res["Section"];
+                endforeach;
+            }
+            return $temp;
         }
         //try method ends
         //catch method starts

@@ -125,6 +125,7 @@ class GalleriesController extends AppController {
             $classSectionResults = $this->ClassInfo->fetchClassSectionsResultsByInstitueId($this->instituteId);
             $postData = $this->request->data;
             if (!empty($postData)) {
+                pr($postData);exit;
                 $galleryData["Gallery"] = $postData["Gallery"];
                 if ($this->Gallery->validates()) {
                     if ($this->Gallery->save($galleryData)) {

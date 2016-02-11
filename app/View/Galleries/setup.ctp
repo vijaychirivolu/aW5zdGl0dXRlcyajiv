@@ -17,7 +17,7 @@
             <li>
                 <a href="<?php echo $this->Html->Url(array("controller"=>"galleries","action"=>"index"));?>"><?php echo __("Gallerys");?></a>
             </li>
-            
+
             <li class="active">
                 <strong><?php echo (isset($id) && $id > 0) ?__("Edit"):__("Add");?></strong>
             </li>
@@ -27,29 +27,29 @@
 </div>
 <div class="wrapper wrapper-content animated fadeInRight">
     <div class="row">
-    <div class="col-lg-12">
-        <div class="ibox float-e-margins">
-            <div class="ibox-title">
-                <h5>All form elements <small>With custom checbox and radion elements.</small></h5>
-                <div class="ibox-tools">
-                    <a class="collapse-link">
-                        <i class="fa fa-chevron-up"></i>
-                    </a>
-                    <a class="dropdown-toggle" data-toggle="dropdown" href="#">
-                        <i class="fa fa-wrench"></i>
-                    </a>
-                    <ul class="dropdown-menu dropdown-user">
-                        <li><a href="#">Config option 1</a>
-                        </li>
-                        <li><a href="#">Config option 2</a>
-                        </li>
-                    </ul>
-                    <a class="close-link">
-                        <i class="fa fa-times"></i>
-                    </a>
+        <div class="col-lg-12">
+            <div class="ibox float-e-margins">
+                <div class="ibox-title">
+                    <h5>All form elements <small>With custom checbox and radion elements.</small></h5>
+                    <div class="ibox-tools">
+                        <a class="collapse-link">
+                            <i class="fa fa-chevron-up"></i>
+                        </a>
+                        <a class="dropdown-toggle" data-toggle="dropdown" href="#">
+                            <i class="fa fa-wrench"></i>
+                        </a>
+                        <ul class="dropdown-menu dropdown-user">
+                            <li><a href="#">Config option 1</a>
+                            </li>
+                            <li><a href="#">Config option 2</a>
+                            </li>
+                        </ul>
+                        <a class="close-link">
+                            <i class="fa fa-times"></i>
+                        </a>
+                    </div>
                 </div>
-            </div>
-            <div class="ibox-content">
+                <div class="ibox-content">
                 <?php
 }
                     echo $this->AppForm->create('Gallery', array(
@@ -63,14 +63,57 @@
                     <div class="form-group"><label class="col-sm-2 control-label"><?php echo __("Class");?></label>
 
                         <div class="col-sm-6">
-                            <select id="demo1" multiple="multiple" name="data[GalleryAccess][section_id][]">
+                            <!--<p>
+                                    <a href="#" id="btnSelectAll">Select all</a> -
+                                    <a href="#" id="btnDeselectAll">Deselect all</a> -
+                                    <a href="#" id="btnToggleSelect">Toggle select</a>
+                            </p>
+                            <div id="tree2"></div>-->
+                            <?php if (!empty($classSectionResults)) { ?>
+                                <ul id="tree">
+                                    <li>
+                                        <label>
+                                            <input type="checkbox" name="data[GalleryAccess][class_id][]" value="all"/>
+                                            All
+                                        </label>
+                                        <ul>
+                                            <?php foreach ($classSectionResults as $key=>$res):?>
+                                    
+                                                <li>
+                                                    <label>
+                                                        <input type="checkbox" name="data[GalleryAccess][class_id][]"/>
+                                                        <?php echo $key;?>
+                                                        <?php if (!empty($res)):
+                                                            ?>
+                                                            <ul>
+                                                            <?php foreach($res as $row):?>
+                                                                <li>
+                                                                    <label>
+                                                                        <input type="checkbox" name="data[GalleryAccess][section_id][]" value="<?php echo $row["id"];?>"/>
+                                                                        <?php echo $row["name"];?>
+                                                                    </label>
+                                                                </li>    
+                                                            <?php endforeach;
+                                                        endif;?>
+                                                            </ul>
+                                                    </label>
+                                                </li> 
+                                                <?php endforeach;?>
+                                        </ul>
+                                    </li>
+                                
+                            <?php }
+                            ?>
+                                </ul>
+                            
+                            <?php /*<select id="demo1" multiple="multiple" name="data[GalleryAccess][section_id][]">
                                 <?php if (!empty($classSectionResults)) {
                                     foreach ($classSectionResults as $key=>$res):
                                         echo '<option value="'.$res["Section"]["id"].'" data-section="'.ucwords(stripslashes($res["ClassInfo"]["name"])).'">'.ucwords(stripslashes($res["Section"]["name"])).'</option>';
                                     endforeach;
                                 }
                                 ?>
-                            </select>
+                            </select><?php */?>
                         </div>
                     </div>
                     <div class="hr-line-dashed"></div>
@@ -114,9 +157,9 @@
                     </div>
                 <?php echo $this->AppForm->end(); ?>
                     <?php if (!$this->request->is('ajax')) { ?>
+                </div>
             </div>
         </div>
     </div>
-</div>
 </div>    
                     <?php } ?>
