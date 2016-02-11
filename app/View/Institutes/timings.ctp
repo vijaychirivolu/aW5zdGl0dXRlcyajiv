@@ -43,8 +43,13 @@
                         <i class="fa fa-times"></i>
                     </a>
                 </div>
-            </div><?php //pr($weekData);?>
+            </div>            
             <div class="ibox-content">
+                <div class="col-lg-12 m-b">
+                <div class="col-sm-3"></div>
+                <div class="col-sm-3 text-center"><strong>Start Time</strong></div>
+                <div class="col-sm-3 text-center"><strong>End Time</strong></div>
+            </div>
                 <?php
                     echo $this->AppForm->create('TimeSetting', array(
                         'class' => 'form-horizontal', 

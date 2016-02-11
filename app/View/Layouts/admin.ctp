@@ -55,7 +55,6 @@
             
             echo $this->Html->css('plugins/tree-multiselect/jquery.tree-multiselect');
             echo $this->Html->css('plugins/iCheck/custom');
-            echo $this->Html->css('plugins/style');
             
             echo $this->Html->css('developer');
         ?>
