@@ -93,7 +93,8 @@ class EmployeesController extends AppController {
              'Employee.institute_id' => $this->instituteId  
            );
            $employeeResults = $this->Employee->fetchAllEmployeesByConditions($conditions);
-           pr($employeeResults);exit;
+           //pr($employeeResults);exit;
+           $this->set(compact("employeeResults"));
        } else {
            $this->redirect($this->UserAuth->redirect());
        }

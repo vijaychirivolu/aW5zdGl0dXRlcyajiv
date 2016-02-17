@@ -32,7 +32,7 @@
     <a href="#"><i class="fa fa-user-md"></i> <span class="nav-label"><?php echo __("Employees");?></span><span class="fa arrow"></span></a>
     <ul class="nav nav-second-level collapse">
         <li class="<?php echo (trim($this->params['controller']) == 'employees' && (trim($this->action) == 'setup'))?'active':""; ?>"><a href="<?php echo $this->Html->Url(array("controller"=>"employees","action"=>"setup"));?>"><?php echo __("Add Employee");?></a></li>
-        <li class="<?php echo (trim($this->params['controller']) == 'employees' && (trim($this->action) == 'index'))?'active':""; ?>"><a href="<?php echo $this->Html->Url(array("controller"=>"employees","action"=>"manage"));?>"><?php echo __("Manage Employees");?></a></li>
+        <li class="<?php echo (trim($this->params['controller']) == 'employees' && (trim($this->action) == 'index'))?'active':""; ?>"><a href="<?php echo $this->Html->Url(array("controller"=>"employees","action"=>"index"));?>"><?php echo __("Manage Employees");?></a></li>
     </ul>
 </li>
 <li class="<?php echo (trim($this->params['controller']) == 'students')?'active':""; ?>">

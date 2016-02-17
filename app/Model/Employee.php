@@ -102,12 +102,11 @@ class Employee extends AppModel {
      *    or MissingViewException in debug mode.
      */
     public function fetchAllEmployeesByConditions($conditions) {
-        return $this->find("all", array(
+        try {
+             return $this->find("all", array(
                         'conditions' => $conditions,
                         'recursive' => 2
             ));
-        try {
-            
         }
         //try method ends
         //catch method starts
