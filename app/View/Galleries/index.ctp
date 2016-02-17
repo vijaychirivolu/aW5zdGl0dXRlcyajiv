@@ -43,12 +43,25 @@
                         <div class="ibox-content product-box albums">
 
                             <div class="product-imitation">
-                                <?php echo $this->Html->image("/files/galleries/1455106638_1_1.jpg",array(
-                                    "alt" => ucwords(stripslashes($res["Gallery"]["name"])),
-                                    "class" => "img-responsive"
-                                ));?>
+                                <?php 
+                                if (isset($res["GalleryImage"]) && isset($res["GalleryImage"]["filename"]) && $res["GalleryImage"]["filename"] !="" && file_exists(WWW_ROOT."files/galleries/".$res["GalleryImage"]["filename"])) {
+                                    echo $this->Html->image("/files/galleries/".$res["GalleryImage"]["filename"],array(
+                                        "alt" => ucwords(stripslashes($res["GalleryImage"]["original_filename"])),
+                                        "class" => "img-responsive"
+                                    ));
+                                } else {
+                                    echo $this->Html->image("/files/galleries/1455109567_1_0.jpg",array(
+                                        "alt" => "No Image",
+                                        "class" => "img-responsive"
+                                    ));
+                                }
+                                
+                                ?>
                             </div>
                             <div class="product-desc">
+                                <a href="<?php echo $this->Html->Url(array("controller"=>"galleries","action"=>"images",$res["Gallery"]["id"]));?>">
+                                    <span class="product-price"><?php echo __("View");?></span>
+                                </a>
                                 <a href="<?php echo $this->Html->Url(array("controller"=>"galleries","action"=>"images",$res["Gallery"]["id"]));?>" class="product-name"><?php echo ucwords(stripslashes($res["Gallery"]["name"]));?></a>
                                 <div class="small m-t-xs">
                                     <?php 
