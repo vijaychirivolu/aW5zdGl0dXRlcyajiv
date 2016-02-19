@@ -53,7 +53,7 @@ class AppController extends Controller {
     public $accountantActions = array();
     public $parentActions = array();
     
-    public $uses = array('User');
+    public $uses = array('User','UserAccessLevel');
     
     public $helpers = array(
         'Session',
@@ -104,11 +104,19 @@ class AppController extends Controller {
             $this->userName = ucwords(stripslashes($this->UserAuth->user('first_name')))." ".ucwords(stripslashes($this->UserAuth->user('last_name')));
         }
         $this->instituteId = ($this->Session->check('institute_id')) ? $this->Session->read('institute_id') : $this->UserAuth->user("institute_id");
+        $accessLevelResult = array();
+        if ($this->userId !="") {
+            $accessLevelResult = $this->UserAccessLevel->fetchAllAccessDetailsByUserId($this->userId);
+        }
+        
+        
+        
         $this->set('userId', $this->userId);
         $this->set('userRole', $this->userRole);
         $this->set('instituteId', $this->instituteId);
         $this->set('userName',$this->userName);
         $this->set('userSessionId',$this->userSessionId);
+        $this->set('accessLevelResult', $accessLevelResult);
         $this->set('metaTitle', $this->metaTitle);
         $this->set('metaDescription', $this->metaDescription);
         $this->set('metaKeywords', $this->metaKeywords);

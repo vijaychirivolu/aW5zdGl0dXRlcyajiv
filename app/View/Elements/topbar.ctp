@@ -130,6 +130,20 @@
                 <i class="fa fa-sign-out"></i> Log out
             </a>
         </li>
+        <li class="dropdown">
+            <a class="dropdown-toggle count-info" data-toggle="dropdown" href="#">
+                <i class="fa fa-tasks"></i>
+            </a>
+            <ul class="dropdown-menu dropdown-roles">
+            <?php foreach($accessLevelResult as $key=>$res):?>
+                <li>
+                    <a href="<?php echo $this->Html->Url(array("controller"=>"users","action"=>"changeUserRole",$res["UserAccessLevel"]["id"]));?>">
+                        <?php echo ucwords(stripslashes($res["GroupValue"]["name"]));?>
+                    </a>
+                </li>
+            <?php endforeach;?>
+            </ul>
+        </li>
     </ul>
 
 </nav>

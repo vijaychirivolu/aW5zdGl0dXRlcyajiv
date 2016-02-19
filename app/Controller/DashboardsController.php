@@ -47,8 +47,10 @@ class DashboardsController extends AppController {
         $this->superadminActions = array('admin_index','school_account');
         $this->adminActions = array();
         $this->instituteAdminActions = array('index');
-        $this->branchActions = array();
-        $this->userActions = array();
+        $this->branchActions = array('index');
+        $this->teacherActions = array('index');
+        $this->accountantActions = array('index');
+        $this->parentActions = array('index');
         parent::beforeFilter();
         $this->UserAuth->allow('');
         $this->set('active_tab', 'users');

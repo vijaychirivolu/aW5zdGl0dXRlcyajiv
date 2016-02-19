@@ -55,7 +55,6 @@
                                     <th><?php echo __("Email");?></th>
                                     <th><?php echo __("Role");?></th>
                                     <th><?php echo __("School");?></th>
-                                    <th class="no-sort align_th"><?php echo __("Action");?></th>
                                 </tr>
                             </thead>
                             <tbody>

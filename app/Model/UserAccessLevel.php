@@ -36,6 +36,20 @@ App::uses('AppModel', 'Model');
 class UserAccessLevel extends AppModel {
     
     public $name = 'UserAccessLevel';
+    public $belongsTo = array(
+        'Institute' => array(
+            'className' => 'Institute',
+            'conditions' => array('Institute.row_status' => 1),
+            'foreignKey' => 'institute_id'
+        ),
+        'GroupValue' => array(
+            'className' => 'GroupValue',
+            'conditions' => array('GroupValue.row_status' => 1),
+            'foreignKey' => 'user_role'
+        )
+    );
+    
+    
     /**
      * Before Save Insert or Update
      * @param array $options Request Arguments
@@ -92,14 +106,95 @@ class UserAccessLevel extends AppModel {
                 'fields' => array(
                     'UserAccessLevel.user_role',
                     'UserAccessLevel.institute_id'
-                ),
-                'conditions' => $conditions
+                ),   
+                'conditions' => $conditions,
+                'order' => 'UserAccessLevel.id desc',
+                'recursive' => -1
             ));
             return (!empty($result)) ? $result : array();
         }
         //try method ends
         //catch method starts
         catch (Exception $e) {
+            pr($e->getMessage());exit;
+            //log_message('error', $this->db->_error_message()); //error message when query is wrong
+            return false;
+        }
+        //catch method ends
+    }
+    
+    /**
+     * Query for fetchAccessDetailsByUserId
+     * @param int $id Id for which information fetched
+     * @return array
+     * @throws NotFoundException When the view file could not be found
+     *    or MissingViewException in debug mode.
+     */
+    public function fetchAllAccessDetailsByUserId($userId) {
+        try {
+            $conditions = array(
+                'UserAccessLevel.row_status' => 1,
+                'UserAccessLevel.user_id' => $userId
+            );
+            $result = $this->find("all", array(
+                'fields' => array(
+                    'UserAccessLevel.id',
+                    'UserAccessLevel.user_role',
+                    'UserAccessLevel.institute_id',
+                    'GroupValue.name'
+                ),
+                'joins' => array(
+                    array(
+                        'table' => 'group_values',
+                        'alias' => 'GroupValue',
+                        'type' => 'left',
+                        'conditions' => array('UserAccessLevel.user_role = GroupValue.id AND GroupValue.row_status = 1')
+                    ),
+                ),
+                'conditions' => $conditions,
+                'order' => 'UserAccessLevel.user_role asc',
+                'recursive' => -1
+            ));
+            return (!empty($result)) ? $result : array();
+        }
+        //try method ends
+        //catch method starts
+        catch (Exception $e) {
+            pr($e->getMessage());exit;
+            //log_message('error', $this->db->_error_message()); //error message when query is wrong
+            return false;
+        }
+        //catch method ends
+    }
+    
+    /**
+     * Query for fetchAccessDetailsById
+     * @param int $id Id for which information fetched
+     * @return array
+     * @throws NotFoundException When the view file could not be found
+     *    or MissingViewException in debug mode.
+     */
+    public function fetchAccessDetailsById($accessLevelId) {
+        try {
+            $conditions = array(
+                'UserAccessLevel.row_status' => 1,
+                'UserAccessLevel.id' => $accessLevelId
+            );
+            $result = $this->find("first", array(
+                'fields' => array(
+                    'UserAccessLevel.user_role',
+                    'UserAccessLevel.institute_id'
+                ),   
+                'conditions' => $conditions,
+                'order' => 'UserAccessLevel.id desc',
+                'recursive' => -1
+            ));
+            return (!empty($result)) ? $result : array();
+        }
+        //try method ends
+        //catch method starts
+        catch (Exception $e) {
+            pr($e->getMessage());exit;
             //log_message('error', $this->db->_error_message()); //error message when query is wrong
             return false;
         }

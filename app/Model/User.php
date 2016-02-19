@@ -37,11 +37,29 @@ class User extends AppModel {
     
     public $name = 'User';
 
+    public $hasMany = array(
+        'UserAccessLevel' => array(
+            'className' => 'UserAccessLevel',
+            'conditions' => array('UserAccessLevel.row_status' => 1),
+            'foreignKey' => 'user_id'
+        )
+    );
+    
     public $validate = array(
         'first_name' => array(
             'rule1' => array(
                 'rule' => array('notBlank'),
-                'message' => 'Please enter name'
+                'message' => 'Please enter first name'
+            ),
+            'between' => array(
+                'rule' => array('between', 3, 50),
+                'message' => 'Between 3 to 50 charaters'
+            ),
+        ),
+        'last_name' => array(
+            'rule1' => array(
+                'rule' => array('notBlank'),
+                'message' => 'Please enter last name'
             ),
             'between' => array(
                 'rule' => array('between', 3, 50),
@@ -201,23 +219,10 @@ class User extends AppModel {
                     'User.first_name',
                     'User.last_name',
                     'User.password',
-                    'User.email',
-                    'User.user_role',
-                    'School.name',
-                    'School.id',
-                    'School.city',
-                    'School.street_address',
-                    'School.state'
+                    'User.email'
                 ),
                 'conditions' => $conditions,
-                'joins' => array(
-                    array(
-                        'table' => 'schools',
-                        'alias' => 'School',
-                        'type' => 'left',
-                        'conditions' => array('User.school_id = School.id')
-                    )
-                )
+                'recursive' => -1
             ));
             return (!empty($result)) ? $result : array();
         }
@@ -270,6 +275,21 @@ class User extends AppModel {
             return false;
         }
         //catch method ends
+    }
+    
+    /**
+     * Entered email exist or not: function is used on create
+     * @param array $field Entered email is existing or not
+     * @return boolean If returns true email exist, other wise email availble
+     * @throws NotFoundException When the view file could not be found
+     *    or MissingViewException in debug mode.
+     */
+    public function isEmailExist($email) {
+        try {
+            return $this->find('first', array('conditions' => array('User.email' => $email, 'User.row_status' => 1)));
+        } catch (Exception $exc) {
+            echo $exc->getTraceAsString();
+        }
     }
 
 }

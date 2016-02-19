@@ -215,10 +215,10 @@ var Admin = function () {
                             {
                                 var append_data = "<option value=''>Select City</option>";
                                 for (var i = 0; i < data.length; i++) {
-                                    append_data += "<option value=" + data[i] + ">" + data[i] + "</option>";
+                                    append_data += '<option value="'+data[i]+'">' + data[i] + '</option>';
                                 }
                                 ajaxFlag = false;
-                                $("#UserUserCity").html(append_data);
+                                $("#UserAccessLevelUserCity").html(append_data);
                             },
                             error: function (jqXHR, textStatus, errorThrown)
                             {
@@ -238,7 +238,7 @@ var Admin = function () {
         $(".city-state-address").each(function () {
             $(this).change(function () {
                 var city = $(this).val();
-                var state = $("#UserUserState").val();
+                var state = $("#UserAccessLevelUserState").val();
                 if ((state != null && state != 'undefined') && (city != null && city != 'undefined')) {
                     if (ajaxFlag == false) {
                         ajaxFlag = true;
@@ -252,10 +252,10 @@ var Admin = function () {
                             {
                                 var append_data = "<option value=''>Select Address</option>";
                                 for (var i = 0; i < data.length; i++) {
-                                    append_data += "<option value=" + data[i] + ">" + data[i] + "</option>";
+                                    append_data += '<option value="'+data[i]+'">' + data[i] + '</option>';
                                 }
                                 ajaxFlag = false;
-                                $("#UserUserAddress").html(append_data);
+                                $("#UserAccessLevelUserAddress").html(append_data);
                             },
                             error: function (jqXHR, textStatus, errorThrown)
                             {
@@ -273,14 +273,14 @@ var Admin = function () {
         $(".school-address").each(function () {
             $(this).change(function () {
                 var address = $(this).val();
-                var state = $("#UserUserState").val();
-                var city = $("#UserUserCity").val();
+                var state = $("#UserAccessLevelUserState").val();
+                var city = $("#UserAccessLevelUserCity").val();
                 if ((state != null && state != 'undefined') && (city != null && city != 'undefined') && (address != null && address != 'undefined')) {
                     if (ajaxFlag == false) {
                         ajaxFlag = true;
                         var formdata = {state: state, city: city, address: address};
                         $.ajax({
-                            url: SITEURL + "admin/users/fetchSchoolByAddress",
+                            url: SITEURL + "admin/users/fetchInstituteByAddress",
                             type: 'POST',
                             data: formdata,
                             dataType: "json",
@@ -288,10 +288,10 @@ var Admin = function () {
                             {
                                 var append_data = "<option value=''>Select School</option>";
                                 for (var i = 0; i < data.length; i++) {
-                                    append_data += "<option value=" + data[i]['id'] + ">" + data[i]['name'] + "</option>";
+                                    append_data += '<option value="'+data[i]["id"]+'">' + data[i]["name"] + '</option>';
                                 }
                                 ajaxFlag = false;
-                                $("#UserSchoolId").html(append_data);
+                                $("#UserAccessLevelInstituteId").html(append_data);
                             },
                             error: function (jqXHR, textStatus, errorThrown)
                             {
@@ -630,8 +630,7 @@ var Admin = function () {
                     {mData: "User.first_name"},
                     {mData: "User.email"},
                     {mData: "GroupValue.name"},
-                    {mData: "School.name"},
-                    {mData: "User.id"}
+                    {mData: "Institute.name"}
                 ],
                 "fnRowCallback": function (nRow, aData, iDisplayIndex, iDisplayIndexFull) {
                     //$('td:eq(0)', nRow).html(aData.State.state_name);
@@ -701,13 +700,13 @@ var Admin = function () {
                         "sPrevious": "<i class='fa fa-arrow-left custom-right'></i>"
                     }
                 },
-                'sAjaxSource': SITEURL + 'admin/schools/index.json',
+                'sAjaxSource': SITEURL + 'admin/institutes/index.json',
                 "aoColumns": [
-                    {mData: "School.name"},
-                    {mData: "School.registration_no"},
-                    {mData: "School.street_address"},
-                    {mData: "School.city"},
-                    {mData: "School.id"}
+                    {mData: "Institute.name"},
+                    {mData: "Institute.registration_no"},
+                    {mData: "Institute.street_address"},
+                    {mData: "Institute.city"},
+                    {mData: "Institute.id"}
                 ],
                 "fnRowCallback": function (nRow, aData, iDisplayIndex, iDisplayIndexFull) {
                 },
@@ -717,9 +716,7 @@ var Admin = function () {
             });
         });
     }
-
-
-
+    
     /**
      * initAjaxDataTable
      * @returns void

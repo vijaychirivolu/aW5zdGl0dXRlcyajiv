@@ -12,6 +12,30 @@
             <li class="nav-header">
                 <div class="dropdown profile-element"> <span>
                         <?php 
+                        echo $this->Html->image("default-school.jpg",array(
+                            "alt" => "profile",
+                            "class" => "img-responsive"
+                        ));
+                        ?>
+                    </span>
+                    <a data-toggle="dropdown" class="dropdown-toggle" href="#">
+                        <span class="clear"> <span class="block m-t-xs"> <strong class="font-bold">David Williams</strong>
+                            </span> <span class="text-muted text-xs block">Art Director <b class="caret"></b></span> </span> </a>
+                    <ul class="dropdown-menu animated fadeInRight m-t-xs">
+                        <li><a href="profile.html">Profile</a></li>
+                        <li><a href="contacts.html">Contacts</a></li>
+                        <li><a href="mailbox.html">Mailbox</a></li>
+                        <li class="divider"></li>
+                        <li><a href="login.html">Logout</a></li>
+                    </ul>
+                </div>
+                <div class="logo-element">
+                    IN+
+                </div>
+            </li>
+            <li class="nav-header">
+                <div class="dropdown profile-element"> <span>
+                        <?php 
                         echo $this->Html->image("profile_small.jpg",array(
                             "alt" => "profile",
                             "class" => "img-circle"

@@ -12,9 +12,9 @@
 <li>
     <a href="#"><i class="fa fa-bar-chart-o"></i> <span class="nav-label"><?php echo __("Schools");?></span><span class="fa arrow"></span></a>
     <ul class="nav nav-second-level collapse">
-        <li><a href="<?php echo $this->Html->Url(array("controller"=>"schools","action"=>"admin_setup"));?>"><?php echo __("Add School");?></a></li>
-        <li><a href="<?php echo $this->Html->Url(array("controller"=>"schools","action"=>"admin_index"));?>"><?php echo __("Manage Schools");?></a></li>
-        <li><a href="<?php echo $this->Html->Url(array("controller"=>"schools","action"=>"admin_uploadHistories"));?>"><?php echo __("Upload History");?></a></li>
+        <li><a href="<?php echo $this->Html->Url(array("controller"=>"institutes","action"=>"admin_setup"));?>"><?php echo __("Add School");?></a></li>
+        <li><a href="<?php echo $this->Html->Url(array("controller"=>"institutes","action"=>"admin_index"));?>"><?php echo __("Manage Schools");?></a></li>
+        <li><a href="<?php echo $this->Html->Url(array("controller"=>"institutes","action"=>"admin_uploadHistories"));?>"><?php echo __("Upload History");?></a></li>
     </ul>
 </li>
 <li class="<?php echo (trim($this->params['controller']) == 'users')?'active':""; ?>">

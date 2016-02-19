@@ -44,11 +44,13 @@ class UsersController extends AppController {
      */
     function beforeFilter() {
         $this->guestActions = array('login', 'forgotPassword');
-        $this->superadminActions = array('admin_manage', 'admin_setup', 'logout','admin_delete', 'admin_fetchCitiesByState', 'admin_fetchAddressByCityState', 'admin_fetchInstituteByAddress');
-        $this->adminActions = array('logout');
-        $this->userActions = array('logout');
-        $this->instituteAdminActions = array('logout');
-        $this->branchActions = array('logout');
+        $this->superadminActions = array('admin_manage', 'admin_setup', 'logout','admin_delete', 'admin_fetchCitiesByState', 'admin_fetchAddressByCityState', 'admin_fetchInstituteByAddress','changeUserRole');
+        $this->adminActions = array('logout','changeUserRole');
+        $this->instituteAdminActions = array('logout','changeUserRole');
+        $this->branchActions = array('logout','changeUserRole');
+        $this->teacherActions = array('logout','changeUserRole');
+        $this->accountantActions = array('logout','changeUserRole');
+        $this->parentActions = array('logout','changeUserRole');
         parent::beforeFilter();
         $this->UserAuth->allow('login', 'forgotPassword');
         $this->set('active_tab', 'users');
@@ -232,44 +234,33 @@ class UsersController extends AppController {
                 'User.row_status' => 1
             );
             $this->paginate = array(
-                'fields' => array(
-                    'User.id',
-                    'User.first_name',
-                    'User.last_name',
-                    'User.email',
-                    'User.time_created',
-                    'GroupValue.name',
-                    'GroupValue.id',
-                    'Institute.name',
-                    'Institute.id'
-                ),
                 'conditions' => $conditions,
-                'joins' => array(
-                    array(
-                        'table' => 'group_values',
-                        'alias' => 'GroupValue',
-                        'type' => 'left',
-                        'conditions' => array('User.user_role = GroupValue.id')
-                    ),
-                    array(
-                        'table' => 'institutes',
-                        'alias' => 'Institute',
-                        'type' => 'left',
-                        'conditions' => array('User.school_id = Institute.id')
-                    )
-                )
+                'recursive' => 2
             );
             $this->DataTable->mDataProp = true;
             $result = $this->DataTable->getResponse();
-            //pr($result);exit;
             $formattedArray = array();
+            $userRoles = "";
+            $instituteName = "";
             if (isset($result["aaData"])) {
                 foreach ($result["aaData"] as $key => $val):
-                    $formattedArray[$key]["User"]["first_name"] = implode('-', array_map('ucwords', explode('-', strtolower(addslashes($val["User"]["first_name"])))));
+                    $formattedArray[$key]["User"]["first_name"] = implode('-', array_map('ucwords', explode('-', strtolower(addslashes($val["User"]["first_name"])))))." ".implode('-', array_map('ucwords', explode('-', strtolower(addslashes($val["User"]["last_name"])))));
                     $formattedArray[$key]["User"]["email"] = implode('-', array_map('ucwords', explode('-', strtolower(addslashes($val["User"]["email"])))));
-                    $formattedArray[$key]["GroupValue"]["name"] = implode('-', array_map('ucwords', explode('-', strtolower(addslashes($val["GroupValue"]["name"])))));
-                    $formattedArray[$key]["Institute"]["name"] = implode('-', array_map('ucwords', explode('-', strtolower(addslashes($val["Institute"]["name"])))));
-                    $formattedArray[$key]["User"]["id"] = '<div class="btn-group"><a class="btn btn-white" href="' . Router::url('/', true) . 'admin/users/setup/' . $val["User"]["id"] . '">' . __("Edit") . '</a><a class="btn btn-white delete-confirm-alert" href="' . Router::url('/', true) . 'admin/users/delete/' . $val["User"]["id"] . '" data-message = "You are permenantly deleting this state!">' . __("Delete") . '</a></div>';
+                    if (!empty($val) && count($val) > 0) {
+                        foreach ($val["UserAccessLevel"] as $k=>$res):
+                            if ($k > 0) {
+                                $userRoles .= ", ";
+                            }
+                            $userRoles .= implode('-', array_map('ucwords', explode('-', strtolower(addslashes($res["GroupValue"]["name"])))));
+                            if ($k == 0) {
+                                $instituteName =  (isset($res["Institute"]) && isset($res["Institute"]["name"]) && $res["Institute"]["name"] !="")?implode('-', array_map('ucwords', explode('-', strtolower(addslashes($res["Institute"]["name"]))))):"N/A";
+                            }
+                            
+                        endforeach;
+                    }
+                    $formattedArray[$key]["GroupValue"]["name"] = $userRoles;
+                    $formattedArray[$key]["Institute"]["name"] = $instituteName;
+                    $userRoles = "";
                 endforeach;
             }
             $result["aaData"] = $formattedArray;
@@ -316,26 +307,42 @@ class UsersController extends AppController {
                     }
                 }
             }
+            $this->User->validator()->remove('email');
             if ($this->User->validates()) {
-                //echo "<pre>"; print_r($postData);exit;
-                $result = $this->User->saveUserDetails($postData);
-                //echo $result;exit;
-                if ($result) {
-                    //if ($id ==0) {
-                        //$this->NotificationEmail->registrationMail($postData);
-                    //}
-                    $msg = ($id > 0) ? __('The User has been updated.') : __('The User has been added.');
-                    if ($this->request->is('ajax')) {
-                        echo json_encode(array(
-                            'status' => "success",
-                            "message" => $msg,
-                            'callback' => array("prefix" => true, "controller" => "users", "action" => "manage")
-                        ));
-                        exit;
-                    } else {
-                        $this->_setFlashMsgs($msg, 'success');
-                        $this->redirect(array('action' => 'manage'));
+                $userData["User"] = $postData["User"];
+                $msg = ($id > 0) ? __('The User has been updated.') : __('The User has been added.');
+                $userResult = $this->User->isEmailExist($userData["User"]["email"]);
+                if (!empty($userResult)) {
+                    $userData["User"]["id"] = $userResult["User"]["id"];
+                }
+                if ($this->User->save($userData)) {
+                    $lastInsertId = ((!empty($userResult)))?$userResult["User"]["id"]:$this->User->getLastInsertID();
+                    if ($lastInsertId !="") {
+                        $userAccessLevelData = array(
+                            'UserAccessLevel' => array(
+                                'user_id' => $lastInsertId,
+                                'user_role' => $postData["UserAccessLevel"]["user_role"],
+                                'institute_id' => $postData["UserAccessLevel"]["institute_id"]
+                            )
+                        );
+                        if ($this->UserAccessLevel->save($userAccessLevelData)) {
+                            if ($this->request->is('ajax')) {
+                                echo json_encode(array(
+                                    'status' => "success",
+                                    "message" => $msg,
+                                    'callback' => array("prefix" => true, "controller" => "users", "action" => "manage")
+                                ));
+                                exit;
+                            } else {
+                                $this->_setFlashMsgs($msg, 'success');
+                                $this->redirect(array('action' => 'manage'));
+                            }
+                        } else {
+                            
+                        }
                     }
+                } else {
+                    
                 }
             } else {
                 $msg = __('Saving failed due to below errors!');
@@ -531,6 +538,19 @@ class UsersController extends AppController {
                 "message" => __('Something went wrong. Please try again!'),
             ));
             exit;
+        }
+    }
+    
+    public function changeUserRole($accessLevelId) {
+        if ($accessLevelId !="" && is_numeric($accessLevelId)) {
+            $accessLevelResult = $this->UserAccessLevel->fetchAccessDetailsById($accessLevelId);
+            if (!empty($accessLevelResult)) {
+                $this->Session->write('Auth.User.user_role', $accessLevelResult["UserAccessLevel"]["user_role"]);
+                $this->Session->write('Auth.User.institute_id', $accessLevelResult["UserAccessLevel"]["institute_id"]);
+            }
+            $this->redirect($this->UserAuth->redirect());
+        } else {
+            $this->redirect($this->UserAuth->redirect());
         }
     }
 
