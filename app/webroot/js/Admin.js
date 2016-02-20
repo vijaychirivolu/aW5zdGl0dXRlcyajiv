@@ -11,6 +11,7 @@ $(window).load(function () {
     $("#spinner").fadeOut("slow");
 });
 $(document).ready(function () {
+    var to_id = new Array();
     $('.i-checks').iCheck({
         checkboxClass: 'icheckbox_square-green',
         radioClass: 'iradio_square-green',
@@ -32,6 +33,62 @@ $(document).ready(function () {
             node.select(true);
         });
         return false;
+    });
+    $("#MessageComposeEmailForm").submit(function() {
+       $("#MessageBody").html($('.summernote').code());
+    });
+    //$("#MessageToMail").autoComplete();
+    function split( val ) {
+      return val.split( /,\s*/ );
+    }
+    function extractLast( term ) {
+      return split( term ).pop();
+    }
+    $("#MessageToMail")
+    .bind( "keydown", function( event ) {
+        if ( event.keyCode === $.ui.keyCode.TAB &&
+            $( this ).autocomplete( "instance" ).menu.active ) {
+          event.preventDefault();
+        }
+      })
+    .autocomplete({
+        source: function( request, response ) {
+          $.getJSON( SITEURL+"Messages/getUserEmails", {
+            term: extractLast( request.term )
+          }, response );
+        },
+        search: function() {
+          // custom minLength
+          var term = extractLast( this.value );
+          if ( term.length < 2 ) {
+            return false;
+          }
+        },
+        focus: function() {
+          // prevent value inserted on focus
+          return false;
+        },
+        select: function( event, ui ) {
+          var terms = split( this.value );
+          // remove the current input
+          terms.pop();
+          // add the selected item
+          terms.push( ui.item.value );
+          to_id.push(ui.item.code);
+          $("#MessageToid").val(to_id);
+          // add placeholder to get the comma-and-space at the end
+          terms.push( "" );
+          this.value = terms.join( ", " );
+          return false;
+        }
+    });
+    $("#attach_id").click(function() {
+       $('.disp-hide').click();
+    });
+    $('.disp-hide').change(function(e){
+        var fileCount = e.target.files.length;
+        $(".no-of-attachments").text(fileCount+" Files Attached.");
+
     });
 });
 $(
@@ -91,6 +148,8 @@ var Admin = function () {
         initClassSectionMultiple();
         initInstituteTimings();
         instituteChangingHours();
+        initInboxMessagesTable();
+        initOutboxMessagesTable();
     }
 
 
@@ -854,7 +913,82 @@ var Admin = function () {
             });
         });
     }
-
+    
+    function initInboxMessagesTable()
+    {
+        $(".messages-table").each(function () {
+            var tableId = $(this).attr('id');
+            $(this).DataTable({
+                "responsive": true,
+                "iDisplayLength": 10,
+                'bProcessing': true,
+                'bServerSide': true,
+                "ordering": false,
+                "searchable": false,
+                "oLanguage": {
+                    "oPaginate": {
+                        "sNext": "<i class='fa fa-arrow-right custom-right'></i>",
+                        "sPrevious": "<i class='fa fa-arrow-left custom-right'></i>"
+                    }
+                },
+                "aoColumns": [
+                    {mData: "MessageReceiver.id", class: "check-mail"},
+                    {mData: "Users.first_name", class: "mail-ontact"},
+                    {mData: "Messages.subject", class: "mail-subject"},
+                    {mData: "Messages.time_created", class:"text-right mail-date"}
+                ],
+                'sAjaxSource': SITEURL + 'messages/index.json',
+                "fnRowCallback": function (nRow, aData, iDisplayIndex, iDisplayIndexFull) {
+                    $("#inboxcount").text("("+(iDisplayIndex+1)+")");
+                    if (aData.MessageReceiver.status == 10002) {
+                        $(nRow).addClass('unread');
+                    } else {
+                        $(nRow).addClass('read');
+                    }
+                },
+                "fnDrawCallback": function () {
+                    confirmMessageAlerts();
+                }
+            });
+        });
+            
+    }
+    
+    
+    function initOutboxMessagesTable(){
+        $(".outmessages-table").each(function () {
+            var ajaxUrl = $(this).attr("data-href");
+            $(this).DataTable({
+                "responsive": true,
+                "iDisplayLength": 10,
+                'bProcessing': true,
+                'bServerSide': true,
+                "ordering": false,
+                "searchable": false,
+                "oLanguage": {
+                    "oPaginate": {
+                        "sNext": "<i class='fa fa-arrow-right custom-right'></i>",
+                        "sPrevious": "<i class='fa fa-arrow-left custom-right'></i>"
+                    }
+                },
+                "aoColumns": [
+                    {mData: "MessageReceiver.id", class: "check-mail"},
+                    {mData: "Users.first_name", class: "mail-ontact"},
+                    {mData: "Messages.subject", class: "mail-subject"},
+                    {mData: "Messages.time_created", class:"text-right mail-date"}
+                ],
+                'sAjaxSource': SITEURL + 'messages/sentMail.json',
+                "fnRowCallback": function (nRow, aData, iDisplayIndex, iDisplayIndexFull) {
+                    $("#outboxcount").text("("+(iDisplayIndex+1)+")");
+                    $(nRow).addClass('read');
+                },
+                "fnDrawCallback": function () {
+                    confirmMessageAlerts();
+                }
+            });
+        });
+        
+    }
     /**
      * 
      * @returns {undefined}
@@ -919,6 +1053,7 @@ var Admin = function () {
 
         }
     }
+    
 
     /**
      * InitSchoolWizardSteps

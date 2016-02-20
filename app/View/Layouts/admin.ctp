@@ -56,6 +56,7 @@
             echo $this->Html->css('plugins/tree-multiselect/jquery.tree-multiselect');
             echo $this->Html->css('plugins/iCheck/custom');
             echo $this->Html->css('jquery-checktree');
+            echo $this->Html->css('jquery-ui.min.css');
             echo $this->Html->css('developer');
         ?>
         <script>
@@ -110,6 +111,7 @@
             echo $this->Html->script('plugins/iCheck/icheck.min');
             echo $this->Html->script('plugins/tree-multiselect/jquery.tree-multiselect');
             echo $this->Html->script('jquery-checktree');
+             echo $this->Html->script('plugins/jquery-ui/jquery-ui.min');
             echo $this->Html->script('Admin');
         ?>
     </body>

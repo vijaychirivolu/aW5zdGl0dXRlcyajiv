@@ -292,4 +292,24 @@ class User extends AppModel {
         }
     }
 
+    /**
+     * Fetch all users details
+     */
+    public function fetchAllUsers($where_array = array()) {
+        try {
+            $conditions = array(
+                'User.row_status' => 1,
+                'User.id != ' => $_SESSION['Auth']['User']['id'],
+                'User.email LIKE' => "%".$where_array['term']."%"
+            );
+            $result = $this->find("all", array(
+                'conditions' => $conditions
+            ));
+            return (!empty($result)) ? $result : array();
+        } catch (Exception $e) {
+            //log_message('error', $this->db->_error_message()); //error message when query is wrong
+            return false;
+        }
+    }
+
 }

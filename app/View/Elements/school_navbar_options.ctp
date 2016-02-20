@@ -65,6 +65,14 @@
     </ul>
 </li>
 <?php } ?>
+<li class="<?php echo (trim($this->params['controller']) == 'messages')?'active':""; ?>">
+    <a href="#"><i class="fa fa-envelope"></i> <span class="nav-label"><?php echo __("Mailbox"); ?> </span><span class="label label-warning pull-right">16/24</span></a>
+    <ul class="nav nav-second-level collapse">
+        <li  class="<?php echo (trim($this->params['controller']) == 'messages' && (trim($this->action) == 'index'))?'active':""; ?>"><a href="<?php echo $this->Html->Url(array("controller"=>"messages","action"=>"index"));?>"><?php echo __("Inbox");?></a></li>
+        <li class="<?php echo (trim($this->params['controller']) == 'messages' && (trim($this->action) == 'viewMessage'))?'active':""; ?>"><a href="<?php echo $this->Html->Url(array("controller"=>"messages","action"=>"viewMessage"));?>"><?php echo __("Email view"); ?></a></li>
+        <li class="<?php echo (trim($this->params['controller']) == 'messages' && (trim($this->action) == 'composeEmail'))?'active':""; ?>"><a href="<?php echo $this->Html->Url(array("controller"=>"messages","action"=>"composeEmail"));?>"><?php echo __("Compose email"); ?></a></li>
+    </ul>
+</li>
 <li>
     <a href="mailbox.html"><i class="fa fa-envelope"></i> <span class="nav-label"><?php echo __("Reports");?> </span></a>
 </li>
