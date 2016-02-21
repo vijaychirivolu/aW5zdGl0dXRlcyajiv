@@ -150,8 +150,13 @@ var Admin = function () {
         instituteChangingHours();
         initInboxMessagesTable();
         initOutboxMessagesTable();
+        initTrashMessagesTable();
+        initInboxMessages();
+        initOutboxMessages();
+        initCheckMessage();
+        initTrashMessages();
     }
-
+    
 
     /*
      * This function will call for ajax actions
@@ -163,6 +168,48 @@ var Admin = function () {
         initFileSelect();
         ajaxFormSubmit();
         initCustomBrowseButton();
+    }
+    
+    /**
+     * 
+     * @returns {undefined}
+     */
+    
+    function initCheckMessage() {
+        $(".delete-messages").click(function() {
+            var tableClass = $(this).parent().parent().parent().find('table').attr('class');
+            var favorite = [];
+            $.each($("input[class='check-message']:checked"), function(){            
+                favorite.push($(this).val());
+            });
+            var trshmsgids = favorite.join(",");
+            if (trshmsgids.length != 0) {
+                $.ajax({
+                    url: SITEURL + "messages/moveMessageToTrash",
+                    type: 'POST',
+                    data: "trshids="+trshmsgids,
+                    dataType: "json",
+                    success: function (data, textStatus, jqXHR)
+                    {
+                        swal("Trash Alert!",data.msg);
+                        if (tableClass.search("outmessages-table") != -1) {
+                            var dataTable = $('.outmessages-table').DataTable();
+                            dataTable.draw();
+                        } else if (tableClass.search("messages-table") != -1) {
+                            var dataTable = $('.messages-table').DataTable();
+                            dataTable.draw();
+                        }
+                    },
+                    error: function (jqXHR, textStatus, errorThrown)
+                    {
+                        ajaxFlag = false;
+                    }
+                });
+            } else {
+                swal("Delete Alert!","Please select messages to delete.");
+                return false;
+            }
+        });
     }
 
     /**
@@ -913,7 +960,10 @@ var Admin = function () {
             });
         });
     }
-    
+    /**
+     * 
+     * @returns {undefined}
+     */
     function initInboxMessagesTable()
     {
         $(".messages-table").each(function () {
@@ -926,6 +976,13 @@ var Admin = function () {
                 "ordering": false,
                 "searchable": false,
                 "oLanguage": {
+                    "sEmptyTable": "",
+                    "sZeroRecords": "No messages fountd in inbox",
+                    "sInfo": "",
+                    "sInfoEmpty": "",
+                    //"sSearch": "Filter: ",
+                    "sInfoFiltered": "",
+                    "sLengthMenu": " _MENU_ ",
                     "oPaginate": {
                         "sNext": "<i class='fa fa-arrow-right custom-right'></i>",
                         "sPrevious": "<i class='fa fa-arrow-left custom-right'></i>"
@@ -954,7 +1011,10 @@ var Admin = function () {
             
     }
     
-    
+    /**
+     * 
+     * @returns {undefined}
+     */
     function initOutboxMessagesTable(){
         $(".outmessages-table").each(function () {
             var ajaxUrl = $(this).attr("data-href");
@@ -966,6 +1026,13 @@ var Admin = function () {
                 "ordering": false,
                 "searchable": false,
                 "oLanguage": {
+                    "sEmptyTable": "",
+                    "sZeroRecords": "No messages fountd in outbox",
+                    "sInfo": "",
+                    "sInfoEmpty": "",
+                    //"sSearch": "Filter: ",
+                    "sInfoFiltered": "",
+                    "sLengthMenu": " _MENU_ ",
                     "oPaginate": {
                         "sNext": "<i class='fa fa-arrow-right custom-right'></i>",
                         "sPrevious": "<i class='fa fa-arrow-left custom-right'></i>"
@@ -993,12 +1060,88 @@ var Admin = function () {
      * 
      * @returns {undefined}
      */
+    function initTrashMessagesTable(){
+        $(".trashmessages-table").each(function () {
+            var ajaxUrl = $(this).attr("data-href");
+            $(this).DataTable({
+                "responsive": true,
+                "iDisplayLength": 10,
+                'bProcessing': true,
+                'bServerSide': true,
+                "ordering": false,
+                "searchable": false,
+                "oLanguage": {
+                    "sEmptyTable": "",
+                    "sZeroRecords": "No messages fountd in trashbox",
+                    "sInfo": "",
+                    "sInfoEmpty": "",
+                    //"sSearch": "Filter: ",
+                    "sInfoFiltered": "",
+                    "sLengthMenu": " _MENU_ ",
+                    "oPaginate": {
+                        "sNext": "<i class='fa fa-arrow-right custom-right'></i>",
+                        "sPrevious": "<i class='fa fa-arrow-left custom-right'></i>"
+                    }
+                },
+                "aoColumns": [
+                    {mData: "MessageReceiver.id", class: "check-mail"},
+                    {mData: "Users.first_name", class: "mail-ontact"},
+                    {mData: "Messages.subject", class: "mail-subject"},
+                    {mData: "Messages.time_created", class:"text-right mail-date"}
+                ],
+                'sAjaxSource': SITEURL + 'messages/trashMessages.json',
+                "fnRowCallback": function (nRow, aData, iDisplayIndex, iDisplayIndexFull) {
+                    $("#outboxcount").text("("+(iDisplayIndex+1)+")");
+                    $(nRow).addClass('read');
+                },
+                "fnDrawCallback": function () {
+                    confirmMessageAlerts();
+                }
+            });
+        });
+        
+    }
+    /**
+     * 
+     * @returns {undefined}
+     */
     function initImageAnimateHover() {
         $('.file-box').each(function () {
             animationHover(this, 'pulse');
         });
     }
-
+    
+    /**
+     * Refresh inbox messages
+     * @returns void
+     */
+    function initInboxMessages() {
+        $(".refresh-inbox-messages").click(function() {
+            var dataTable = $(".messages-table").DataTable();
+            dataTable.draw();
+        });
+    }
+    
+    /**
+     * Refresh outbox messages
+     * @returns void
+     */
+    function initOutboxMessages() {
+        $(".refresh-outbox-messages").click(function() {
+            var dataTable = $(".outmessages-table").DataTable();
+            dataTable.draw();
+        });
+    }
+    /**
+     * Refresh trash messages
+     * @returns void
+     */
+    function initTrashMessages() {
+        $(".refresh-trash-messages").click(function() {
+            var dataTable = $(".trashmessages-table").DataTable();
+            dataTable.draw();
+        });
+    }
     /**
      * Summerynote
      */

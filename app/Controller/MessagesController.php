@@ -46,7 +46,7 @@ class MessagesController extends AppController {
         $this->guestActions = array();
         $this->superadminActions = array('admin_inbox','index','composeEmail');
         $this->adminActions = array();
-        $this->instituteAdminActions = array('index','composeEmail', 'viewMessage','getUserEmails','sentMail','downloaddoc','downloadall','createZipFile');
+        $this->instituteAdminActions = array('index','composeEmail', 'viewMessage','getUserEmails','sentMail','downloaddoc','downloadall','createZipFile','trashMessages','moveMessageToTrash');
         $this->branchActions = array();
         $this->userActions = array();
         parent::beforeFilter();
@@ -117,7 +117,7 @@ class MessagesController extends AppController {
                         'table' => 'users',
                         'alias' => 'Users',
                         'type' => 'left',
-                        'conditions' => array('MessageReceiver.receiver_id = Users.id')
+                        'conditions' => array('Messages.sender_id = Users.id')
                     )
                 )
             );
@@ -127,7 +127,7 @@ class MessagesController extends AppController {
             $formattedArray = array();
             if (isset($result["aaData"])) {
                 foreach ($result["aaData"] as $key => $val):
-                    $formattedArray[$key]["MessageReceiver"]["id"] = '<input type="checkbox" class="i-checks" name="read_status" id="read_status" value="'.$val['MessageReceiver']['id'].'">';
+                    $formattedArray[$key]["MessageReceiver"]["id"] = '<input type="checkbox" class="check-message" name="readstatus[]" value="'.$val['MessageReceiver']['id'].'">';
                     $formattedArray[$key]["Users"]["first_name"] = '<a href="' . Router::url('/', true) . 'messages/viewMessage/' . $val["Messages"]["id"] . '">'.ucwords($val['Users']['first_name']).'</a>';
                     $formattedArray[$key]["MessageReceiver"]["status"] = $val['MessageReceiver']['status'];
                     $formattedArray[$key]["Messages"]["subject"] = '<a href="' . Router::url('/', true) . 'messages/viewMessage/' . $val["Messages"]["id"] . '">'.$val['Messages']['subject'].'</a>';
@@ -221,6 +221,15 @@ class MessagesController extends AppController {
     }
 
     public function viewMessage($id = 0) {
+        $conditions = array(
+                            "MessageReceiver.message_id" => $id,
+                            "MessageReceiver.receiver_id" => AuthComponent::user('id'),
+                            "MessageReceiver.row_status" => 1
+                          );
+        $updateData = array(
+                        "MessageReceiver.status" => 10001
+                      );
+        $result = $this->MessageReceiver->updateMessageStatus($updateData, $conditions);
         $message_details = $this->Message->fetchMessageDetailsById($id);
         //pr($message_details);exit;
         $this->set('messageinfo', $message_details);
@@ -266,7 +275,7 @@ class MessagesController extends AppController {
             $formattedArray = array();
             if (isset($result["aaData"])) {
                 foreach ($result["aaData"] as $key => $val):
-                    $formattedArray[$key]["MessageReceiver"]["id"] = '<input type="checkbox" class="i-checks" name="read_status" id="read_status" value="'.$val['MessageReceiver']['id'].'">';
+                    $formattedArray[$key]["MessageReceiver"]["id"] = '<input type="checkbox" class="check-message" name="read_status" id="read_status" value="'.$val['MessageReceiver']['id'].'">';
                     $formattedArray[$key]["Users"]["first_name"] = '<a href="' . Router::url('/', true) . 'messages/viewMessage/' . $val["Messages"]["id"] . '">'.ucwords($val['Users']['first_name']).'</a>';
                     $formattedArray[$key]["MessageReceiver"]["status"] = $val['MessageReceiver']['status'];
                     $formattedArray[$key]["Messages"]["subject"] = '<a href="' . Router::url('/', true) . 'messages/viewMessage/' . $val["Messages"]["id"] . '">'.$val['Messages']['subject'].'</a>';
@@ -321,5 +330,82 @@ function createZipFile($filenameArray, $file_path) {
     readfile($filename);
     exit;
 }
+public function trashMessages() {
+    $userdata = $this->Session->read('Auth.User');
+        /*$messages = $this->MessageReceiver->fetchUserMessages($userdata);
+        $this->set('messages', $messages);*/
+        if ($this->RequestHandler->responseType() == 'json') {
+            $conditions = array(
+                                'MessageReceiver.row_status' => 1, 
+                                'MessageReceiver.receiver_id ' => $userdata["id"], 
+                                'Messages.institute_id '=> $userdata["institute_id"], 
+                                'MessageReceiver.type' => 20003
+                               );
+            $this->paginate = array(
+                'fields' => array(
+                    'MessageReceiver.id',
+                    'MessageReceiver.status',
+                    'Messages.id',
+                    'Messages.subject',
+                    'Messages.time_created',
+                    'Users.first_name'
+                ),
+                'conditions' => $conditions,
+                'joins' => array(
+                    array(
+                        'table' => 'messages',
+                        'alias' => 'Messages',
+                        'type' => 'left',
+                        'conditions' => array('MessageReceiver.message_id = Messages.id',)
+                    ),
+                    array(
+                        'table' => 'users',
+                        'alias' => 'Users',
+                        'type' => 'left',
+                        'conditions' => array('Messages.sender_id = Users.id')
+                    )
+                )
+            );
+            $this->DataTable->mDataProp = true;
+            $result = $this->DataTable->getResponse();
+            //pr($result);exit;
+            $formattedArray = array();
+            if (isset($result["aaData"])) {
+                foreach ($result["aaData"] as $key => $val):
+                    $formattedArray[$key]["MessageReceiver"]["id"] = '<input type="checkbox" class="" name="readstatus[]" id="read_status" value="'.$val['MessageReceiver']['id'].'">';
+                    $formattedArray[$key]["Users"]["first_name"] = '<a href="' . Router::url('/', true) . 'messages/viewMessage/' . $val["Messages"]["id"] . '">'.ucwords($val['Users']['first_name']).'</a>';
+                    $formattedArray[$key]["MessageReceiver"]["status"] = $val['MessageReceiver']['status'];
+                    $formattedArray[$key]["Messages"]["subject"] = '<a href="' . Router::url('/', true) . 'messages/viewMessage/' . $val["Messages"]["id"] . '">'.$val['Messages']['subject'].'</a>';
+                    $formattedArray[$key]["Messages"]["time_created"] = date("H:m A", strtotime($val['Messages']['time_created']));
+                endforeach;
+            }
+            $result["aaData"] = $formattedArray;
+            $this->set('response', $result);
+            $this->set('_serialize', 'response');
+        }
 }
+
+
+public function moveMessageToTrash() {
+    //$trashmessageids  = explode(",", $_POST['trshids']);
+    $conditions = array(
+                    "MessageReceiver.row_status = 1",
+                    "MessageReceiver.receiver_id = ".AuthComponent::user('id'),
+                    "MessageReceiver.id in (".$_POST['trshids'].")"
+                  );
+    //pr($conditions);exit;
+    $updateData = array(
+                    "MessageReceiver.type" => 20003
+                  );
+    $result = $this->MessageReceiver->moveMessageTrash($updateData, $conditions);
+    if($result) {
+        echo json_encode(array("status"=>1,"msg"=>"Moved to trash successfully"));
+        exit;
+    } else {
+        echo json_encode(array("status"=>2,"msg"=>"Something went wrong"));
+        exit;
+    }
+}
+
+            }
 ?>

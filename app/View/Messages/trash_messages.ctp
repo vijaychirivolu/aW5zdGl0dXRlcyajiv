@@ -6,6 +6,7 @@
  * and open the template in the editor.
  */
 ?>
+
 <div class="wrapper wrapper-content">
     <div class="row">
         <div class="col-lg-3">
@@ -41,23 +42,24 @@
                     </div>
                 </form>
                 <h2>
-                    Inbox <span id="inboxcount">(0)</span>
+                    Trash <span id="outboxcount">(0)</span>
                 </h2>
                 <div class="mail-tools tooltip-demo m-t-md">
                     <!--div class="btn-group pull-right">
                         <button class="btn btn-white btn-sm"><i class="fa fa-arrow-left"></i></button>
                         <button class="btn btn-white btn-sm"><i class="fa fa-arrow-right"></i></button>
+
                     </div-->
-                    <button class="btn btn-white btn-sm refresh-inbox-messages" data-toggle="tooltip" data-placement="left" title="Refresh inbox"><i class="fa fa-refresh"></i> Refresh</button>
-                    <!--button class="btn btn-white btn-sm" data-toggle="tooltip" data-placement="top" title="Mark as read"><i class="fa fa-eye"></i> </button>
-                    <button class="btn btn-white btn-sm" data-toggle="tooltip" data-placement="top" title="Mark as important"><i class="fa fa-exclamation"></i> </button-->
-                    <button class="btn btn-white btn-sm delete-messages" data-toggle="tooltip" data-placement="top" title="Move to trash"><i class="fa fa-trash-o"></i> </button>
+                    <button class="btn btn-white btn-sm refresh-trash-messages" data-toggle="tooltip" data-placement="left" title="Refresh outbox" id="refreshoutbox"><i class="fa fa-refresh"></i> Refresh</button>
+                    <!--button class="btn btn-white btn-sm" data-toggle="tooltip" data-placement="top" title="Mark as read"><i class="fa fa-eye"></i> </button-->
+                    <!--button class="btn btn-white btn-sm" data-toggle="tooltip" data-placement="top" title="Mark as important"><i class="fa fa-exclamation"></i> </button-->
+                    <button class="btn btn-white btn-sm" data-toggle="tooltip" data-placement="top" title="Move to trash" id="deltemessage"><i class="fa fa-trash-o"></i> </button>
 
                 </div>
             </div>
             <div class="ibox-content">
 
-                <table class="table table-hover table-mail messages-table" id="inbox_table">
+                <table class="table table-hover table-mail trashmessages-table" id="trashbox_table">
                     <thead>
                         <th></th>
                         <th></th>
@@ -65,6 +67,8 @@
                         <th></th>
                     </thead>
                 </table>
+
+
             </div>
         </div>
     </div>
@@ -77,5 +81,3 @@
         <strong>Copyright</strong> Example Company &copy; 2014-2015
     </div>
 </div>
-
-

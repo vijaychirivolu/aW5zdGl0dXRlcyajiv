@@ -21,7 +21,7 @@
                             <li><a href="<?php echo $this->Html->Url(array("controller"=>"messages","action"=>"sentMail"));?>"> <i class="fa fa-envelope-o"></i> Send Mail</a></li>
                             <!--li><a href="mailbox.html"> <i class="fa fa-certificate"></i> Important</a></li-->
                             <!--li><a href="<?php echo $this->Html->Url(array("controller"=>"messages","action"=>"index"));?>"> <i class="fa fa-file-text-o"></i> Drafts <span class="label label-danger pull-right">2</span></a></li-->
-                            <li><a href="<?php echo $this->Html->Url(array("controller"=>"messages","action"=>"index"));?>"> <i class="fa fa-trash-o"></i> Trash</a></li>
+                            <li><a href="<?php echo $this->Html->Url(array("controller"=>"messages","action"=>"trashMessages"));?>"> <i class="fa fa-trash-o"></i> Trash</a></li>
                         </ul>
                         <div class="clearfix"></div>
                     </div>
@@ -54,14 +54,15 @@
                 <div class="mail-body">
                     <?php echo $messageinfo['Message']['body']; ?>
                 </div>
+                <?php if($messageinfo['Message']['has_attechments'] != "" && $messageinfo['Message']['has_attechments'] != 0) { ?>
                 <div class="mail-attachment">
                     <p>
                         <span><i class="fa fa-paperclip"></i> <?php echo count($messageinfo['MessageAttachment']); ?> attachments - </span>
                         <a href="<?php echo Router::url('/', true).'messages/downloadall/'.$messageinfo['Message']['id'] ?>">Download all</a>
-                        |
-                        <a href="#">View all images</a>
+                        <!--|-->
+                        <!--a href="#">View all images</a-->
                     </p>
-
+                    
                     <div class="attachment">
                         <?php
                             foreach ($messageinfo['MessageAttachment'] as $key => $value) {
@@ -89,6 +90,7 @@
                         <div class="clearfix"></div>
                     </div>
                 </div>
+                <?php } ?>
                 <div class="mail-body text-right tooltip-demo">
                     <a class="btn btn-sm btn-white" href="mail_compose.html"><i class="fa fa-reply"></i> Reply</a>
                     <a class="btn btn-sm btn-white" href="mail_compose.html"><i class="fa fa-arrow-right"></i> Forward</a>

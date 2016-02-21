@@ -137,4 +137,30 @@ class MessageReceiver extends AppModel {
             return FALSE;
         }
     }
+    
+    /**
+     * function to update the message read status
+     * @param id int messageid
+     * @return boolean
+     */
+    public function updateMessageStatus($updateData, $conditions) {
+        try {
+            return $this->updateAll($updateData, $conditions);
+        } catch (Exception $e) {
+            return false;
+        }
+    }
+    
+    /**
+     * function to update the message trash status
+     * @param id int messageid
+     * @return boolean
+     */
+    public function moveMessageTrash($updateData, $conditions) {
+        try {
+            return $this->updateAll($updateData, $conditions);
+        } catch (Exception $e) {
+            return false;
+        }
+    }
 }

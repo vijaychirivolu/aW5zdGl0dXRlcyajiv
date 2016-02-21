@@ -17,11 +17,11 @@
                         <div class="space-25"></div>
                         <h5>Folders</h5>
                         <ul class="folder-list m-b-md" style="padding: 0">
-                            <li><a href="<?php echo $this->Html->Url(array("controller"=>"messages","action"=>"index"));?>"> <i class="fa fa-inbox "></i> Inbox <span class="label label-warning pull-right">16</span> </a></li>
+                            <li><a href="<?php echo $this->Html->Url(array("controller"=>"messages","action"=>"index"));?>"> <i class="fa fa-inbox "></i> Inbox <span class="label label-warning pull-right inbox-unread-count">16</span> </a></li>
                             <li><a href="<?php echo $this->Html->Url(array("controller"=>"messages","action"=>"sentMail"));?>"> <i class="fa fa-envelope-o"></i> Send Mail</a></li>
                             <!--li><a href="mailbox.html"> <i class="fa fa-certificate"></i> Important</a></li-->
                             <!--li><a href="<?php echo $this->Html->Url(array("controller"=>"messages","action"=>"index"));?>"> <i class="fa fa-file-text-o"></i> Drafts <span class="label label-danger pull-right">2</span></a></li-->
-                            <li><a href="<?php echo $this->Html->Url(array("controller"=>"messages","action"=>"index"));?>"> <i class="fa fa-trash-o"></i> Trash</a></li>
+                            <li><a href="<?php echo $this->Html->Url(array("controller"=>"messages","action"=>"trashMessages"));?>"> <i class="fa fa-trash-o"></i> Trash</a></li>
                         </ul>
                         <div class="clearfix"></div>
                     </div>
@@ -50,10 +50,10 @@
                         <button class="btn btn-white btn-sm"><i class="fa fa-arrow-right"></i></button>
 
                     </div-->
-                    <button class="btn btn-white btn-sm" data-toggle="tooltip" data-placement="left" title="Refresh inbox" id="refreshoutbox"><i class="fa fa-refresh"></i> Refresh</button>
+                    <button class="btn btn-white btn-sm refresh-outbox-messages" data-toggle="tooltip" data-placement="left" title="Refresh outbox" id="refreshoutbox"><i class="fa fa-refresh"></i> Refresh</button>
                     <!--button class="btn btn-white btn-sm" data-toggle="tooltip" data-placement="top" title="Mark as read"><i class="fa fa-eye"></i> </button-->
                     <!--button class="btn btn-white btn-sm" data-toggle="tooltip" data-placement="top" title="Mark as important"><i class="fa fa-exclamation"></i> </button-->
-                    <button class="btn btn-white btn-sm" data-toggle="tooltip" data-placement="top" title="Move to trash" id="deltemessage"><i class="fa fa-trash-o"></i> </button>
+                    <button class="btn btn-white btn-sm delete-messages" data-toggle="tooltip" data-placement="top" title="Move to trash" id="deltemessage"><i class="fa fa-trash-o"></i> </button>
 
                 </div>
             </div>
