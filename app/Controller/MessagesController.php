@@ -251,9 +251,11 @@ class MessagesController extends AppController {
                     'Messages.id',
                     'Messages.subject',
                     'Messages.time_created',
-                    'Users.first_name'
+                    'group_concat(Users.first_name) user_names',
+                    'MessageReceiver.message_id'
                 ),
                 'conditions' => $conditions,
+                'group' => array('MessageReceiver.message_id'), 
                 'joins' => array(
                     array(
                         'table' => 'messages',
@@ -262,10 +264,16 @@ class MessagesController extends AppController {
                         'conditions' => array('MessageReceiver.message_id = Messages.id',)
                     ),
                     array(
+                        'table' => 'message_receivers',
+                        'alias' => 'MessageReceiver1',
+                        'type' => 'inner',
+                        'conditions' => array('MessageReceiver.message_id = MessageReceiver1.message_id','MessageReceiver1.type = 20001')
+                    ),
+                    array(
                         'table' => 'users',
                         'alias' => 'Users',
                         'type' => 'left',
-                        'conditions' => array('MessageReceiver.receiver_id = Users.id')
+                        'conditions' => array('MessageReceiver1.receiver_id = Users.id')
                     )
                 )
             );
@@ -276,7 +284,7 @@ class MessagesController extends AppController {
             if (isset($result["aaData"])) {
                 foreach ($result["aaData"] as $key => $val):
                     $formattedArray[$key]["MessageReceiver"]["id"] = '<input type="checkbox" class="check-message" name="read_status" id="read_status" value="'.$val['MessageReceiver']['id'].'">';
-                    $formattedArray[$key]["Users"]["first_name"] = '<a href="' . Router::url('/', true) . 'messages/viewMessage/' . $val["Messages"]["id"] . '">'.ucwords($val['Users']['first_name']).'</a>';
+                    $formattedArray[$key]["Users"]["first_name"] = '<a href="' . Router::url('/', true) . 'messages/viewMessage/' . $val["Messages"]["id"] . '">'.ucwords($val[0]['user_names']).'</a>';
                     $formattedArray[$key]["MessageReceiver"]["status"] = $val['MessageReceiver']['status'];
                     $formattedArray[$key]["Messages"]["subject"] = '<a href="' . Router::url('/', true) . 'messages/viewMessage/' . $val["Messages"]["id"] . '">'.$val['Messages']['subject'].'</a>';
                     $formattedArray[$key]["Messages"]["time_created"] = date("H:m A", strtotime($val['Messages']['time_created']));
