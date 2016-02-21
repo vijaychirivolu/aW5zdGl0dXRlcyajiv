@@ -33,7 +33,7 @@ App::uses('AppController', 'Controller');
  */
 class EmployeesController extends AppController {
 
-    public $uses = array('Employee');
+    public $uses = array('Employee','Skill');
     public $components = array('Custom');
 
     /**
@@ -75,10 +75,9 @@ class EmployeesController extends AppController {
      *    or MissingViewException in debug mode.
      */
     public function index() {
-       
-            
+        
     }
-    
+
     /**
      * Index
      * @param array $user User Session data
@@ -88,18 +87,18 @@ class EmployeesController extends AppController {
      */
     public function grid() {
         if ($this->instituteId != "") {
-           $conditions = array(
-             'Employee.row_status' => 1,
-             'Employee.institute_id' => $this->instituteId  
-           );
-           $employeeResults = $this->Employee->fetchAllEmployeesByConditions($conditions);
-           //pr($employeeResults);exit;
-           $this->set(compact("employeeResults"));
-       } else {
-           $this->redirect($this->UserAuth->redirect());
-       }
+            $conditions = array(
+                'Employee.row_status' => 1,
+                'Employee.institute_id' => $this->instituteId
+            );
+            $employeeResults = $this->Employee->fetchAllEmployeesByConditions($conditions);
+            //pr($employeeResults);exit;
+            $this->set(compact("employeeResults"));
+        } else {
+            $this->redirect($this->UserAuth->redirect());
+        }
     }
-    
+
     /**
      * Index
      * @param array $user User Session data
@@ -108,8 +107,41 @@ class EmployeesController extends AppController {
      *    or MissingViewException in debug mode.
      */
     public function setup($id = 0) {
-        
+        if ($this->instituteId != "") {
+            $postData = $this->request->data;
+            $skillDetails = $this->Skill->fetchSkillsDetailsByInstituteId($this->instituteId);
+            foreach($skillDetails as $k=>$res){
+                $instituteSkills[$res['Skill']['id']] = $res['Skill']['name'];
+            }
+            if (!empty($postData)) {
+                if ($this->Student->validates()) {
+                    if ($this->Employee->save($postData)) {
+                        $msg = ($id > 0) ? __('The Employee has been updated.') : __('The Employee has been added.');
+                        if ($this->request->is('ajax')) {
+                            echo json_encode(array(
+                                'status' => "success",
+                                "message" => $msg,
+                                'callback' => array("prefix" => false, "controller" => "employees", "action" => "index")
+                            ));
+                            exit;
+                        } else {
+                            $this->_setFlashMsgs($msg, 'success');
+                            $this->redirect(array('action' => 'index'));
+                        }
+                    }
+                }
+            } else {
+                if ($id > 0) {
+                    $result = $this->Student->fetchStudentDetailsById($id);
+                    $this->request->data = $result;
+                }
+            }
+            $this->set(compact("id", "instituteSkills"));
+        } else {
+            $this->redirect($this->UserAuth->redirect());
+        }
     }
+
 }
 
 ?>
