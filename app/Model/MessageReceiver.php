@@ -81,14 +81,14 @@ class MessageReceiver extends AppModel {
                 $insertdata['MessageReceiver'][$key]['message_id'] = $data['Message']['message_id'];
                 $insertdata['MessageReceiver'][$key]['receiver_id'] = $value;
                 $insertdata['MessageReceiver'][$key]['status'] = 10002;
-                $insertdata['MessageReceiver'][$key]['type'] = 20001;
+                $insertdata['MessageReceiver'][$key]['type'] = 12001;
                 $insertdata['MessageReceiver'][$key]['time_created'] = date("Y-m-d H:m:i");
                 $i = $key;
             }
                 $insertdata['MessageReceiver'][$i+1]['message_id'] = $data['Message']['message_id'];
                 $insertdata['MessageReceiver'][$i+1]['receiver_id'] = AuthComponent::user('id');
                 $insertdata['MessageReceiver'][$i+1]['status'] = 10002;
-                $insertdata['MessageReceiver'][$i+1]['type'] = 20002;
+                $insertdata['MessageReceiver'][$i+1]['type'] = 12002;
                 $insertdata['MessageReceiver'][$i+1]['time_created'] = date("Y-m-d H:m:i");
             return $this->saveAll($insertdata['MessageReceiver']);
         } catch (Exception $e) {

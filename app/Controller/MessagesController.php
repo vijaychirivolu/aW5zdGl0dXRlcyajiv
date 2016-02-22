@@ -94,7 +94,7 @@ class MessagesController extends AppController {
                                 'MessageReceiver.row_status' => 1, 
                                 'MessageReceiver.receiver_id ' => $userdata["id"], 
                                 'Messages.institute_id '=> $userdata["institute_id"], 
-                                'MessageReceiver.type' => 20001
+                                'MessageReceiver.type' => 12001
                                );
             $this->paginate = array(
                 'fields' => array(
@@ -242,7 +242,7 @@ class MessagesController extends AppController {
                                 'MessageReceiver.row_status' => 1, 
                                 'MessageReceiver.receiver_id ' => $userdata["id"], 
                                 'Messages.institute_id '=> $userdata["institute_id"], 
-                                'MessageReceiver.type' => 20002
+                                'MessageReceiver.type' => 12002
                                );
             $this->paginate = array(
                 'fields' => array(
@@ -267,7 +267,7 @@ class MessagesController extends AppController {
                         'table' => 'message_receivers',
                         'alias' => 'MessageReceiver1',
                         'type' => 'inner',
-                        'conditions' => array('MessageReceiver.message_id = MessageReceiver1.message_id','MessageReceiver1.type = 20001')
+                        'conditions' => array('MessageReceiver.message_id = MessageReceiver1.message_id','MessageReceiver1.type = 12001')
                     ),
                     array(
                         'table' => 'users',
@@ -347,7 +347,7 @@ public function trashMessages() {
                                 'MessageReceiver.row_status' => 1, 
                                 'MessageReceiver.receiver_id ' => $userdata["id"], 
                                 'Messages.institute_id '=> $userdata["institute_id"], 
-                                'MessageReceiver.type' => 20003
+                                'MessageReceiver.type' => 12003
                                );
             $this->paginate = array(
                 'fields' => array(
@@ -403,7 +403,7 @@ public function moveMessageToTrash() {
                   );
     //pr($conditions);exit;
     $updateData = array(
-                    "MessageReceiver.type" => 20003
+                    "MessageReceiver.type" => 12003
                   );
     $result = $this->MessageReceiver->moveMessageTrash($updateData, $conditions);
     if($result) {
