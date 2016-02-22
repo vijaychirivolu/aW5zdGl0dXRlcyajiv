@@ -34,7 +34,7 @@ App::uses('AppController', 'Controller');
 class DashboardsController extends AppController {
 
     public $uses = array('Institute');
-    public $components = array('NotificationEmail');
+    public $components = array('NotificationEmail','Dashboards');
 
     /**
      * Before filter
@@ -88,6 +88,14 @@ class DashboardsController extends AppController {
      *    or MissingViewException in debug mode.
      */
     public function index() {
+        if ($this->instituteId != "") {
+            $this->set('StudentCount',$this->Dashboards->getStudentCntByInstituteId($this->instituteId));
+            $this->set('EmployeeCount',$this->Dashboards->getEmployeeCntByInstituteId($this->instituteId));
+            //$this->set('NewMsgCnt',$this->Dashboards->getNewMessageCntByRecieverId($this->instituteId));
+            //$this->set('NewMsg',$this->Dashboards->getNewMessagesByRecieverId($this->instituteId));
+        } else {
+            $this->redirect($this->UserAuth->redirect());
+        }
     }
 
     public function account($instituteId) {

@@ -29,7 +29,7 @@
                     <h5><?php echo __("Students");?></h5>
                 </div>
                 <div class="ibox-content">
-                    <h1 class="no-margins">40 886,200</h1>
+                    <h1 class="no-margins"><?php echo isset($StudentCount)?$StudentCount:0;?></h1>
                     <div class="stat-percent font-bold text-success">98% <i class="fa fa-bolt"></i></div>
                     <small>Total income</small>
                 </div>
@@ -42,7 +42,7 @@
                     <h5><?php echo __("Teachers");?></h5>
                 </div>
                 <div class="ibox-content">
-                    <h1 class="no-margins">275,800</h1>
+                    <h1 class="no-margins"><?php echo isset($EmployeeCount)?$EmployeeCount:0;?></h1>
                     <div class="stat-percent font-bold text-info">20% <i class="fa fa-level-up"></i></div>
                     <small>New orders</small>
                 </div>
@@ -91,7 +91,7 @@
                 </div>
                 <div class="ibox-content ibox-heading">
                     <h3><i class="fa fa-envelope-o"></i> New messages</h3>
-                    <small><i class="fa fa-tim"></i> You have 22 new messages and 16 waiting in draft folder.</small>
+                    <small><i class="fa fa-tim"></i> You have <?php echo isset($NewMsgCnt['NewMsgCount'])?$NewMsgCnt['NewMsgCount']:0?> new messages and <?php echo isset($NewMsgCnt['DraftMsgCnt'])?$NewMsgCnt['DraftMsgCnt']:0 ?> waiting in draft folder.</small>
                 </div>
                 <div class="ibox-content">
                     <div class="feed-activity-list">

@@ -116,5 +116,14 @@ class Employee extends AppModel {
             //log_message('error', $this->db->_error_message()); //error message when query is wrong
         }
     }
+    
+    public function getEmployeeCntByInstituteId($instituteId=0){
+        $sqlstr="SELECT count(1) as EmpCount FROM employees WHERE institute_id in (SELECT id FROM institutes where id =".$instituteId." and  row_status=1 union SELECT id FROM institutes where id =".$instituteId." and row_status=1) and row_status=1";
+//        $sqlstr="SELECT count(1) as EmpCount FROM employees WHERE institute_id=".$instituteId." and row_status=1";
+//        $sqlstr="SELECT count(1) as StdCount FROM students WHERE row_status=1";
+        $result=$this->query($sqlstr);
+//        pr($sqlstr);pr($result);exit;
+        return isset($result[0][0]['EmpCount'])? $result[0][0]['EmpCount']:0;
+    }
 
 }
