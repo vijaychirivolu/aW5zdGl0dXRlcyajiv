@@ -58,7 +58,10 @@ class AppController extends Controller {
     public $helpers = array(
         'Session',
         'Timthumb.Timthumb',
-        'Form' => array('className' => 'AppForm')
+        'Form' => array('className' => 'AppForm'),
+        'CakeBreadcrumbs.Breadcrumb',
+        "MinifyHtml.MinifyHtml",
+        'Minify.Minify'
     );
     public $components = array(
         'Acl',
@@ -67,6 +70,7 @@ class AppController extends Controller {
         'Paginator',
         'RequestHandler',
         'Cookie',
+        'CakeBreadcrumbs.Breadcrumb',
         'UserAuth' => array(
             'authenticate' => array(
                 'Form' => array(

@@ -110,6 +110,10 @@ CakeLog::config('error', array(
 	'file' => 'error',
 ));
 CakePlugin::load('Timthumb', array('routes' => true, 'bootstrap' => true));
+CakePlugin::load('CakeBreadcrumbs');
+CakePlugin::load('MinifyHtml');
+CakePlugin::load(array('Minify' => array('routes' => true)));
+
 defined('HTTP_HOST') or define('HTTP_HOST', $_SERVER['HTTP_HOST']);
 if (HTTP_HOST == 'localhost/schools' || HTTP_HOST == '192.168.0.122' || HTTP_HOST == 'localhost' || HTTP_HOST == 'local.institutes.com') {
     define('ENVIRONMENT', 'development');

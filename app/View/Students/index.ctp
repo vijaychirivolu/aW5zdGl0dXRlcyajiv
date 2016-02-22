@@ -20,20 +20,7 @@
  * @dateUpdated 07/17/2015  MM/DD/YYYY  
  */
 ?>
-<div class="row wrapper border-bottom white-bg page-heading">
-    <div class="col-lg-10">
-        <h2><?php echo __("Manage Sections");?></h2>
-        <ol class="breadcrumb">
-            <li>
-                <a href="<?php echo $this->Html->Url(array("controller"=>"dashboards","action"=>"admin_index"));?>"><?php echo __("Dashboards");?></a>
-            </li>
-            <li class="active">
-                <strong><?php echo __("Manage");?></strong>
-            </li>
-        </ol>
-    </div>
-    <div class="col-lg-2"></div>
-</div>
+<?php echo $this->Breadcrumb->render(); ?>
 <div class="wrapper wrapper-content animated fadeInRight">
     <div class="row">
         <div class="col-lg-12">

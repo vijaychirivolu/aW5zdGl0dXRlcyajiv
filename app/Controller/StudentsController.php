@@ -54,6 +54,7 @@ class StudentsController extends AppController {
         if ($this->request->is('ajax')) {
             $this->layout = false;
         }
+        $this->Breadcrumb->add('Dashboards', '/dashboards/index');
     }
 
     /**
@@ -66,7 +67,6 @@ class StudentsController extends AppController {
     public function isAuthorized($user) {
         return $this->__checkAuthentication($user, $this->action);
     }
-
     /**
      * Index
      * @param array $user User Session data
@@ -76,8 +76,10 @@ class StudentsController extends AppController {
      */
     public function index() {
         if ($this->instituteId != "") {
+            $heading = __("Manage Students");
+            $this->Breadcrumb->add('Manage', '');
             $classResult = $this->Custom->fetchClassesForDropDown($this->instituteId);
-            $this->set(compact("classResult"));
+            $this->set(compact("classResult","heading"));
         } else {
             $this->redirect($this->UserAuth->redirect());
         }
@@ -92,6 +94,9 @@ class StudentsController extends AppController {
      */
     public function setup($id = 0) {
         if ($this->instituteId != "") {
+            $heading = ($id > 0)?__("Edit Student"):__("Add Student");
+            $this->Breadcrumb->add('Manage', '/students/index');
+            $this->Breadcrumb->add(($id > 0)?'Edit':'Add', '');
             $postData = $this->request->data;
             $classResult = $this->Custom->fetchClassesForDropDown($this->instituteId);
             if (!empty($postData)) {
