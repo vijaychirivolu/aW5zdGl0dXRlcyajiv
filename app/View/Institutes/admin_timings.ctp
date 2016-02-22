@@ -57,11 +57,11 @@
                         'enctype' => 'multipart/form-data',
                         'novalidate'
                     ));
+                    
                 ?>
                 <?php 
                 if (!empty($instituteHours)) {     
-                foreach($instituteHours as $key=>$row) {
-                    echo $this->AppForm->hidden($key.".InstituteTiming.institute_id",array("value"=>$instituteId));
+                foreach($instituteHours as $key=>$row) { 
                     ?>
                     <div class="form-group">
                         <div class="col-sm-3">
@@ -111,7 +111,7 @@
                 <?php } }?>
                  <div class="form-group">
                     <div class="col-sm-4 col-sm-offset-4">
-                        <?php echo $this->Html->link(_("Cancel"),array("controller"=>"dashboards","action"=>"index"),array("class"=>"btn btn-white"));?>
+                        <?php echo $this->Html->link(_("Cancel"),array("controller"=>"institutes","action"=>"admin_index"),array("class"=>"btn btn-white"));?>
                         <?php
                             echo $this->AppForm->button(__("Save changes"), array(
                                 'class' => 'btn btn-primary',

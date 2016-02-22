@@ -60,6 +60,21 @@
                     ));
                     echo $this->AppForm->hidden("id");
                 ?>
+                    <div class="form-group"><label class="col-sm-2 control-label"><?php echo __("Year");?></label>
+
+                        <div class="col-sm-6">
+                            <?php
+                            echo  $this->AppForm->input('year',array(
+                                'type'=>'select',
+                                'class'=>'form-control m-b required',
+                                'label'=>false,
+                                'div'=>false,
+                                'options' => $yearOptions
+                            ));
+                            ?>
+                        </div>
+                    </div>
+                    <div class="hr-line-dashed"></div>
                     <div class="form-group"><label class="col-sm-2 control-label"><?php echo __("Class");?></label>
 
                         <div class="col-sm-6">

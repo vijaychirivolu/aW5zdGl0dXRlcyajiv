@@ -72,8 +72,12 @@ class Skill extends AppModel {
      */
     public function beforeSave($options = array()) {
         //pr($this->data);exit;
-        if (isset($this->data[$this->alias]['id']) && $this->data[$this->alias]['id'] == '') {
+        if (Router::getParams("action") == "admin_skills") {
             $this->data[$this->alias]['time_created'] = date('Y-m-d H:i:s');
+        } else {
+            if (isset($this->data[$this->alias]['id']) && $this->data[$this->alias]['id'] == '') {
+                $this->data[$this->alias]['time_created'] = date('Y-m-d H:i:s');
+            }
         }
         $userId = AuthComponent::user('id');
         $this->data[$this->alias]['requested_by'] = ($userId != "") ? $userId : 0;

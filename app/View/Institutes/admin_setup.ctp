@@ -104,7 +104,7 @@
                                         <?php
                                             echo $this->AppForm->input('logo', array(
                                                 'type' => 'file',
-                                                'class' => 'custom_file_button required',
+                                                'class' => (isset($this->request->data) && isset($this->request->data["Institute"]) && isset($this->request->data["Institute"]["logo"]) && $this->request->data["Institute"]["logo"] !="")?'custom_file_button':'custom_file_button required',
                                                 'label' => false,
                                                 'div' => false,
                                                 "placeholder" => "Logo"

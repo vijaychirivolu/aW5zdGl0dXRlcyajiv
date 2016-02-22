@@ -139,7 +139,7 @@
                 </div>
                 <div class="ibox-content">
                     <div class="">
-                        <a href="<?php echo $this->Html->Url(array("controller"=>"schools","action"=>"admin_setup"));?>" class="btn btn-primary "><?php echo __("Add a new school");?></a>
+                        <a href="<?php echo $this->Html->Url(array("controller"=>"institutes","action"=>"admin_setup"));?>" class="btn btn-primary "><?php echo __("Add a new school");?></a>
                     </div>
                     <table class="table table-striped table-bordered table-hover school-ajax-dataTable">
                         <thead>

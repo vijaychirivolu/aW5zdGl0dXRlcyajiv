@@ -36,6 +36,37 @@
 </div>
 <div class="wrapper wrapper-content animated fadeInRight">
     <div class="row">
+        <div class="pull-right mail-search">
+            <?php
+                echo $this->AppForm->create('Gallery', array(
+                    'class' => 'form-horizontal', 
+                    'method' => 'post',
+                    'enctype' => 'multipart/form-data',
+                    'novalidate'
+                ));
+            ?>
+            <div class="input-group">
+                <?php
+                echo  $this->AppForm->input('keyword',array(
+                    'type'=>'text',
+                    'class'=>'form-control m-b',
+                    'label'=>false,
+                    'div'=>false,
+                    'default' => $keyword
+                    
+                ));
+                ?>
+                <div class="input-group-btn">
+                    <button class="btn btn-sm btn-primary" type="submit">
+                        Search
+                    </button>
+                </div>
+            </div>
+            <?php echo $this->AppForm->end(); ?>
+        </div>
+    </div>
+    <div class="clear"></div>
+    <div class="row">
         <?php if(!empty($galleriesResult)) {
             foreach ($galleriesResult as $key=>$res):?>
                 <div class="col-md-3">

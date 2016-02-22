@@ -34,7 +34,7 @@ App::uses('File', 'Utility');
  */
 class EventsController extends AppController {
 
-    public $uses = array('Events');
+    public $uses = array('Events',"ClassInfo");
     public $components = array('NotificationEmail', 'DataTable', 'Custom', 'Csv');
 
     /**
@@ -47,6 +47,7 @@ class EventsController extends AppController {
         $this->guestActions = array();
         $this->superadminActions = array('admin_index', 'admin_setup', 'admin_uploadEventData');
         $this->adminActions = array();
+        $this->instituteAdminActions = array('index', 'setup');
         $this->userActions = array();
         parent::beforeFilter();
         $this->UserAuth->allow('');
@@ -115,31 +116,38 @@ class EventsController extends AppController {
      *    or MissingViewException in debug mode.
      */
     public function setup($id = 0) {
-        $postData = $this->request->data;
-        if (!empty($postData)) {
-            if ($this->Event->validates()) {
-                if ($this->Event->save($postData)) {
-                    $msg = ($id > 0) ? __('The Event has been updated.') : __('The Event has been added.');
-                    if ($this->request->is('ajax')) {
-                        echo json_encode(array(
-                            'status' => "success",
-                            "message" => $msg,
-                            'callback' => array("prefix" => true, "controller" => "states", "action" => "index")
-                        ));
-                        exit;
-                    } else {
-                        $this->_setFlashMsgs($msg, 'success');
-                        $this->redirect(array('action' => 'admin_index'));
+        if ($this->instituteId !="") {
+            $postData = $this->request->data;
+            $classSectionResults = $this->ClassInfo->fetchClassSectionsResultsByInstitueId($this->instituteId);
+            $studentResults = array();
+            if (!empty($postData)) {
+                if ($this->Event->validates()) {
+                    if ($this->Event->save($postData)) {
+                        $msg = ($id > 0) ? __('The Event has been updated.') : __('The Event has been added.');
+                        if ($this->request->is('ajax')) {
+                            echo json_encode(array(
+                                'status' => "success",
+                                "message" => $msg,
+                                'callback' => array("prefix" => true, "controller" => "states", "action" => "index")
+                            ));
+                            exit;
+                        } else {
+                            $this->_setFlashMsgs($msg, 'success');
+                            $this->redirect(array('action' => 'admin_index'));
+                        }
                     }
                 }
+            } else {
+                if ($id > 0) {
+                    $result = $this->Event->fetchStateDetailsById($id);
+                    $this->request->data = $result;
+                }
             }
+            $this->set(compact("id","classSectionResults","studentResults"));
         } else {
-            if ($id > 0) {
-                $result = $this->Event->fetchStateDetailsById($id);
-                $this->request->data = $result;
-            }
+            $this->redirect($this->UserAuth->redirect());
         }
-        $this->set("id",$id);
+        
     }
 }
 ?>

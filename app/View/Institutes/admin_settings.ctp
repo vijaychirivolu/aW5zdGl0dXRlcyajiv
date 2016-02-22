@@ -53,7 +53,6 @@
                         'novalidate'
                     ));
                     echo $this->AppForm->hidden("id");
-                    echo $this->AppForm->hidden("institute_id",array("value"=>$instituteId));
                 ?>
                     <div class="form-group"><label class="col-sm-2 control-label"><?php echo __("Break Time");?></label>
 
@@ -115,7 +114,7 @@
                     <div class="hr-line-dashed"></div>
                     <div class="form-group">
                         <div class="col-sm-4 col-sm-offset-2">
-                            <?php echo $this->Html->link(_("Cancel"),array("controller"=>"dashboards","action"=>"index"),array("class"=>"btn btn-white"));?>
+                            <?php echo $this->Html->link(_("Cancel"),array("controller"=>"institutes","action"=>"admin_index"),array("class"=>"btn btn-white"));?>
                             <?php
                                 echo $this->AppForm->button(__("Save changes"), array(
                                     'class' => 'btn btn-primary',

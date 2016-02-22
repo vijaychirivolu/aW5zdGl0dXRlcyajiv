@@ -44,7 +44,7 @@ class DashboardsController extends AppController {
      */
     function beforeFilter() {
         $this->guestActions = array();
-        $this->superadminActions = array('admin_index','school_account');
+        $this->superadminActions = array('admin_index','account');
         $this->adminActions = array();
         $this->instituteAdminActions = array('index');
         $this->branchActions = array('index');
@@ -90,11 +90,12 @@ class DashboardsController extends AppController {
     public function index() {
     }
 
-    public function school_account($schoolId) {
-        $isExists = $this->School->isSchoolExistsById($schoolId);
+    public function account($instituteId) {
+        $isExists = $this->Institute->isInstituteExistsById($instituteId);
         if ($isExists) {
-            $this->Session->write('institute_id', $schoolId);
-            return $this->redirect(array('controller' => 'galleries', 'action' => 'school_index'));
+            $this->Session->write('Auth.User.user_role', 1003);
+            $this->Session->write('Auth.User.institute_id', $instituteId);
+            return $this->redirect(array('controller' => 'dashboards', 'action' => 'index'));
         } else {
             return $this->redirect(array('controller' => 'schools', 'action' => 'admin_index'));
         }

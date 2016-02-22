@@ -243,16 +243,16 @@ class Institute extends AppModel {
     
     /**
      * isInstituteExists
-     * @param Int $schoolId
+     * @param Int $instituteId
      * @return boolean 
      * @throws NotFoundException When the view file could not be found
      *    or MissingViewException in debug mode. 
      */
-    public function isInstituteExistsById($schoolId) {
+    public function isInstituteExistsById($instituteId) {
         $count = $this->find("count",array(
            'conditions' => array(
                'Institute.row_status' => 1,
-               'Institute.id' => $schoolId
+               'Institute.id' => $instituteId
            ) 
         ));
         return ($count > 0) ? true : false;

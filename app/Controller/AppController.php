@@ -108,7 +108,9 @@ class AppController extends Controller {
         if ($this->userId !="") {
             $accessLevelResult = $this->UserAccessLevel->fetchAllAccessDetailsByUserId($this->userId);
         }
-        
+        if ($this->params["controller"] == "institutes" && ($this->params["action"] !="admin_skills" || $this->params["action"] !="admin_timings" || $this->params["action"] !="admin_settings")) {
+            $this->Session->write('Auth.User.institute_id', 0);
+        }
         
         
         $this->set('userId', $this->userId);

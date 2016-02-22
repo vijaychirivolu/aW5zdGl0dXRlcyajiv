@@ -34,60 +34,60 @@ $(document).ready(function () {
         });
         return false;
     });
-    $("#MessageComposeEmailForm").submit(function() {
-       $("#MessageBody").html($('.summernote').code());
+    $("#MessageComposeEmailForm").submit(function () {
+        $("#MessageBody").html($('.summernote').code());
     });
     //$("#MessageToMail").autoComplete();
-    function split( val ) {
-      return val.split( /,\s*/ );
+    function split(val) {
+        return val.split(/,\s*/);
     }
-    function extractLast( term ) {
-      return split( term ).pop();
+    function extractLast(term) {
+        return split(term).pop();
     }
     $("#MessageToMail")
-    .bind( "keydown", function( event ) {
-        if ( event.keyCode === $.ui.keyCode.TAB &&
-            $( this ).autocomplete( "instance" ).menu.active ) {
-          event.preventDefault();
-        }
-      })
-    .autocomplete({
-        source: function( request, response ) {
-          $.getJSON( SITEURL+"Messages/getUserEmails", {
-            term: extractLast( request.term )
-          }, response );
-        },
-        search: function() {
-          // custom minLength
-          var term = extractLast( this.value );
-          if ( term.length < 2 ) {
-            return false;
-          }
-        },
-        focus: function() {
-          // prevent value inserted on focus
-          return false;
-        },
-        select: function( event, ui ) {
-          var terms = split( this.value );
-          // remove the current input
-          terms.pop();
-          // add the selected item
-          terms.push( ui.item.value );
-          to_id.push(ui.item.code);
-          $("#MessageToid").val(to_id);
-          // add placeholder to get the comma-and-space at the end
-          terms.push( "" );
-          this.value = terms.join( ", " );
-          return false;
-        }
+            .bind("keydown", function (event) {
+                if (event.keyCode === $.ui.keyCode.TAB &&
+                        $(this).autocomplete("instance").menu.active) {
+                    event.preventDefault();
+                }
+            })
+            .autocomplete({
+                source: function (request, response) {
+                    $.getJSON(SITEURL + "Messages/getUserEmails", {
+                        term: extractLast(request.term)
+                    }, response);
+                },
+                search: function () {
+                    // custom minLength
+                    var term = extractLast(this.value);
+                    if (term.length < 2) {
+                        return false;
+                    }
+                },
+                focus: function () {
+                    // prevent value inserted on focus
+                    return false;
+                },
+                select: function (event, ui) {
+                    var terms = split(this.value);
+                    // remove the current input
+                    terms.pop();
+                    // add the selected item
+                    terms.push(ui.item.value);
+                    to_id.push(ui.item.code);
+                    $("#MessageToid").val(to_id);
+                    // add placeholder to get the comma-and-space at the end
+                    terms.push("");
+                    this.value = terms.join(", ");
+                    return false;
+                }
+            });
+    $("#attach_id").click(function () {
+        $('.disp-hide').click();
     });
-    $("#attach_id").click(function() {
-       $('.disp-hide').click();
-    });
-    $('.disp-hide').change(function(e){
+    $('.disp-hide').change(function (e) {
         var fileCount = e.target.files.length;
-        $(".no-of-attachments").text(fileCount+" Files Attached.");
+        $(".no-of-attachments").text(fileCount + " Files Attached.");
 
     });
 });
@@ -155,8 +155,9 @@ var Admin = function () {
         initOutboxMessages();
         initCheckMessage();
         initTrashMessages();
+        initEventTimeHideShow();
     }
-    
+
 
     /*
      * This function will call for ajax actions
@@ -169,17 +170,17 @@ var Admin = function () {
         ajaxFormSubmit();
         initCustomBrowseButton();
     }
-    
+
     /**
      * 
      * @returns {undefined}
      */
-    
+
     function initCheckMessage() {
-        $(".delete-messages").click(function() {
+        $(".delete-messages").click(function () {
             var tableClass = $(this).parent().parent().parent().find('table').attr('class');
             var favorite = [];
-            $.each($("input[class='check-message']:checked"), function(){            
+            $.each($("input[class='check-message']:checked"), function () {
                 favorite.push($(this).val());
             });
             var trshmsgids = favorite.join(",");
@@ -187,11 +188,11 @@ var Admin = function () {
                 $.ajax({
                     url: SITEURL + "messages/moveMessageToTrash",
                     type: 'POST',
-                    data: "trshids="+trshmsgids,
+                    data: "trshids=" + trshmsgids,
                     dataType: "json",
                     success: function (data, textStatus, jqXHR)
                     {
-                        swal("Trash Alert!",data.msg);
+                        swal("Trash Alert!", data.msg);
                         if (tableClass.search("outmessages-table") != -1) {
                             var dataTable = $('.outmessages-table').DataTable();
                             dataTable.draw();
@@ -206,7 +207,7 @@ var Admin = function () {
                     }
                 });
             } else {
-                swal("Delete Alert!","Please select messages to delete.");
+                swal("Delete Alert!", "Please select messages to delete.");
                 return false;
             }
         });
@@ -321,7 +322,7 @@ var Admin = function () {
                             {
                                 var append_data = "<option value=''>Select City</option>";
                                 for (var i = 0; i < data.length; i++) {
-                                    append_data += '<option value="'+data[i]+'">' + data[i] + '</option>';
+                                    append_data += '<option value="' + data[i] + '">' + data[i] + '</option>';
                                 }
                                 ajaxFlag = false;
                                 $("#UserAccessLevelUserCity").html(append_data);
@@ -358,7 +359,7 @@ var Admin = function () {
                             {
                                 var append_data = "<option value=''>Select Address</option>";
                                 for (var i = 0; i < data.length; i++) {
-                                    append_data += '<option value="'+data[i]+'">' + data[i] + '</option>';
+                                    append_data += '<option value="' + data[i] + '">' + data[i] + '</option>';
                                 }
                                 ajaxFlag = false;
                                 $("#UserAccessLevelUserAddress").html(append_data);
@@ -394,7 +395,7 @@ var Admin = function () {
                             {
                                 var append_data = "<option value=''>Select School</option>";
                                 for (var i = 0; i < data.length; i++) {
-                                    append_data += '<option value="'+data[i]["id"]+'">' + data[i]["name"] + '</option>';
+                                    append_data += '<option value="' + data[i]["id"] + '">' + data[i]["name"] + '</option>';
                                 }
                                 ajaxFlag = false;
                                 $("#UserAccessLevelInstituteId").html(append_data);
@@ -822,7 +823,7 @@ var Admin = function () {
             });
         });
     }
-    
+
     /**
      * initAjaxDataTable
      * @returns void
@@ -992,11 +993,11 @@ var Admin = function () {
                     {mData: "MessageReceiver.id", class: "check-mail"},
                     {mData: "Users.first_name", class: "mail-ontact"},
                     {mData: "Messages.subject", class: "mail-subject"},
-                    {mData: "Messages.time_created", class:"text-right mail-date"}
+                    {mData: "Messages.time_created", class: "text-right mail-date"}
                 ],
                 'sAjaxSource': SITEURL + 'messages/index.json',
                 "fnRowCallback": function (nRow, aData, iDisplayIndex, iDisplayIndexFull) {
-                    $("#inboxcount").text("("+(iDisplayIndex+1)+")");
+                    $("#inboxcount").text("(" + (iDisplayIndex + 1) + ")");
                     if (aData.MessageReceiver.status == 10002) {
                         $(nRow).addClass('unread');
                     } else {
@@ -1008,14 +1009,14 @@ var Admin = function () {
                 }
             });
         });
-            
+
     }
-    
+
     /**
      * 
      * @returns {undefined}
      */
-    function initOutboxMessagesTable(){
+    function initOutboxMessagesTable() {
         $(".outmessages-table").each(function () {
             var ajaxUrl = $(this).attr("data-href");
             $(this).DataTable({
@@ -1042,11 +1043,11 @@ var Admin = function () {
                     {mData: "MessageReceiver.id", class: "check-mail"},
                     {mData: "Users.first_name", class: "mail-ontact"},
                     {mData: "Messages.subject", class: "mail-subject"},
-                    {mData: "Messages.time_created", class:"text-right mail-date"}
+                    {mData: "Messages.time_created", class: "text-right mail-date"}
                 ],
                 'sAjaxSource': SITEURL + 'messages/sentMail.json',
                 "fnRowCallback": function (nRow, aData, iDisplayIndex, iDisplayIndexFull) {
-                    $("#outboxcount").text("("+(iDisplayIndex+1)+")");
+                    $("#outboxcount").text("(" + (iDisplayIndex + 1) + ")");
                     $(nRow).addClass('read');
                 },
                 "fnDrawCallback": function () {
@@ -1054,13 +1055,13 @@ var Admin = function () {
                 }
             });
         });
-        
+
     }
     /**
      * 
      * @returns {undefined}
      */
-    function initTrashMessagesTable(){
+    function initTrashMessagesTable() {
         $(".trashmessages-table").each(function () {
             var ajaxUrl = $(this).attr("data-href");
             $(this).DataTable({
@@ -1087,11 +1088,11 @@ var Admin = function () {
                     {mData: "MessageReceiver.id", class: "check-mail"},
                     {mData: "Users.first_name", class: "mail-ontact"},
                     {mData: "Messages.subject", class: "mail-subject"},
-                    {mData: "Messages.time_created", class:"text-right mail-date"}
+                    {mData: "Messages.time_created", class: "text-right mail-date"}
                 ],
                 'sAjaxSource': SITEURL + 'messages/trashMessages.json',
                 "fnRowCallback": function (nRow, aData, iDisplayIndex, iDisplayIndexFull) {
-                    $("#outboxcount").text("("+(iDisplayIndex+1)+")");
+                    $("#outboxcount").text("(" + (iDisplayIndex + 1) + ")");
                     $(nRow).addClass('read');
                 },
                 "fnDrawCallback": function () {
@@ -1099,7 +1100,7 @@ var Admin = function () {
                 }
             });
         });
-        
+
     }
     /**
      * 
@@ -1110,24 +1111,24 @@ var Admin = function () {
             animationHover(this, 'pulse');
         });
     }
-    
+
     /**
      * Refresh inbox messages
      * @returns void
      */
     function initInboxMessages() {
-        $(".refresh-inbox-messages").click(function() {
+        $(".refresh-inbox-messages").click(function () {
             var dataTable = $(".messages-table").DataTable();
             dataTable.draw();
         });
     }
-    
+
     /**
      * Refresh outbox messages
      * @returns void
      */
     function initOutboxMessages() {
-        $(".refresh-outbox-messages").click(function() {
+        $(".refresh-outbox-messages").click(function () {
             var dataTable = $(".outmessages-table").DataTable();
             dataTable.draw();
         });
@@ -1137,7 +1138,7 @@ var Admin = function () {
      * @returns void
      */
     function initTrashMessages() {
-        $(".refresh-trash-messages").click(function() {
+        $(".refresh-trash-messages").click(function () {
             var dataTable = $(".trashmessages-table").DataTable();
             dataTable.draw();
         });
@@ -1196,7 +1197,7 @@ var Admin = function () {
 
         }
     }
-    
+
 
     /**
      * InitSchoolWizardSteps
@@ -1386,5 +1387,17 @@ var Admin = function () {
                 }
             });
         });
+    }
+
+    function initEventTimeHideShow() {
+        $(".time_hide_show").each(function () {
+            $(this).on('ifChecked', function () {
+                $("#time_div").removeClass("table-none");
+            });
+            $(this).on('ifUnchecked', function () {
+                $("#time_div").addClass("table-none");
+            }); 
+        });
+
     }
 }();

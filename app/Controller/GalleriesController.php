@@ -79,8 +79,21 @@ class GalleriesController extends AppController {
             'Gallery.row_status' => 1,
             'Gallery.institute_id' => $this->instituteId
         );
+        $year = (isset($year) && $year !="")?$year:date("Y");
+        if (!empty($this->request->data)) {
+            $keyword = (isset($this->request->data["Gallery"]) && isset($this->request->data["Gallery"]["keyword"]) && $this->request->data["Gallery"]["keyword"] !="")?$this->request->data["Gallery"]["keyword"]:"";  
+            if ($keyword !="") {
+                $galleryConditions["OR"] = array(
+                    'Gallery.name' => $keyword,
+                    'Gallery.year' => $keyword
+                );
+            }
+        } else {
+            $galleryConditions["Gallery.year"] = $year;
+        }
+        $keyword = (isset($keyword) && $keyword !="")?$keyword:$year;
         $galleriesResult = $this->Gallery->fetchAllGalleriesByConditions($galleryConditions);
-        $this->set(compact('galleriesResult'));
+        $this->set(compact('galleriesResult',"keyword"));
         //echo $this->schoolId;exit;
     }
 
@@ -122,10 +135,13 @@ class GalleriesController extends AppController {
      */
     public function setup($id = 0) {
         if ($this->instituteId != "") {
+            $yearOptions = array();
+            for($i = date("Y");$i>= date("Y")-10;$i--) {
+                $yearOptions[$i] = $i;
+            }
             $classSectionResults = $this->ClassInfo->fetchClassSectionsResultsByInstitueId($this->instituteId);
             $postData = $this->request->data;
             if (!empty($postData)) {
-                pr($postData);exit;
                 $galleryData["Gallery"] = $postData["Gallery"];
                 if ($this->Gallery->validates()) {
                     if ($this->Gallery->save($galleryData)) {
@@ -158,7 +174,7 @@ class GalleriesController extends AppController {
                     $this->request->data = $result;
                 }
             }
-            $this->set(compact("id", "classSectionResults"));
+            $this->set(compact("id", "classSectionResults","yearOptions"));
         } else {
             $this->redirect($this->UserAuth->redirect());
         }

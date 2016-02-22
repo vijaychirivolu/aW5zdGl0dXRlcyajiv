@@ -49,16 +49,16 @@ class UserAuthComponent extends AuthComponent {
                     $redir = '/dashboards/index';
                     break;
                 case 1004:
-                    $redir = '/admin/dashboards/index';
+                    $redir = '/dashboards/index';
                     break;
                 case 1005:
-                    $redir = '/admin/dashboards/index';
+                    $redir = '/dashboards/index';
                     break;
                 case 1006:
-                    $redir = '/admin/dashboards/index';
+                    $redir = '/dashboards/index';
                     break;
                 case 1007:
-                    $redir = '/admin/dashboards/index';
+                    $redir = '/dashboards/index';
                     break;
                 default:
                     $redir = '/users/login';
