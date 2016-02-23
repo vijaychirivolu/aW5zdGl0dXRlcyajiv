@@ -5,7 +5,6 @@
  * To change this template file, choose Tools | Templates
  * and open the template in the editor.
  */
-//pr($messageinfo);exit;
 ?>
 <div class="wrapper wrapper-content">
     <div class="row">
@@ -33,7 +32,7 @@
                 <div class="pull-right tooltip-demo">
                     <a href="mail_compose.html" class="btn btn-white btn-sm" data-toggle="tooltip" data-placement="top" title="Reply"><i class="fa fa-reply"></i> Reply</a>
                     <a href="#" class="btn btn-white btn-sm" data-toggle="tooltip" data-placement="top" title="Print email"><i class="fa fa-print"></i> </a>
-                    <a href="mailbox.html" class="btn btn-white btn-sm" data-toggle="tooltip" data-placement="top" title="Move to trash"><i class="fa fa-trash-o"></i> </a>
+                    <a href="<?php echo $this->Html->Url(array("controller"=>"messages","action"=>"trashById",$type,$messageinfo['Message']['id'])); ?>" class="btn btn-white btn-sm" data-toggle="tooltip" data-placement="top" title="Move to trash"><i class="fa fa-trash-o"></i> </a>
                 </div>
                 <h2>
                     View Message
@@ -44,13 +43,16 @@
                     </h3>
                     <h5>
                         <span class="pull-right font-noraml"><?php echo date('h:iA d M Y', strtotime($messageinfo['Message']['time_created'])); ?></span>
-                        <span class="font-noraml">From: </span><?php //echo $messageinfo['Users']['email']; ?>
+                        <?php if($type == "outbox") { ?>
+                        <span class="font-noraml">To: </span><span class="message-receviers"><?php echo $messageinfo['MessageReceiver'][0]['User']['email'] ?></span><?php echo "(".count($messageinfo['MessageReceiver']).")"; ?>
+                        <?php } else if($type == "inbox") { ?>
+                            <span class="font-noraml">From: </span><span class="message-receviers"><?php echo $messageinfo['MessageReceiver'][0]['User']['email'] ?></span>
+                        <?php } ?>
+                        
                     </h5>
                 </div>
             </div>
             <div class="mail-box">
-
-
                 <div class="mail-body">
                     <?php echo $messageinfo['Message']['body']; ?>
                 </div>
@@ -95,7 +97,7 @@
                     <a class="btn btn-sm btn-white" href="mail_compose.html"><i class="fa fa-reply"></i> Reply</a>
                     <a class="btn btn-sm btn-white" href="mail_compose.html"><i class="fa fa-arrow-right"></i> Forward</a>
                     <button title="" data-placement="top" data-toggle="tooltip" type="button" data-original-title="Print" class="btn btn-sm btn-white"><i class="fa fa-print"></i> Print</button>
-                    <button title="" data-placement="top" data-toggle="tooltip" data-original-title="Trash" class="btn btn-sm btn-white"><i class="fa fa-trash-o"></i> Remove</button>
+                    <a href="<?php echo $this->Html->Url(array("controller"=>"messages","action"=>"trashById",$type,$messageinfo['Message']['id'])); ?>" title="" data-placement="top" data-toggle="tooltip" data-original-title="Trash" class="btn btn-sm btn-white"><i class="fa fa-trash-o"></i> Remove</a>
                 </div>
                 <div class="clearfix"></div>
 

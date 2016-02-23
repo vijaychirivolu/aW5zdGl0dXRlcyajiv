@@ -57,3 +57,13 @@ button.DTTT_button:hover, div.DTTT_button:hover, a.DTTT_button:hover {
     width: 0;
     height: 0;
 }
+div.token-input-dropdown{
+    z-index: 999999;    
+}
+.message-receviers {
+    display:inline-block;
+    width:100px;
+    white-space: nowrap;
+    overflow:hidden !important;
+    text-overflow: ellipsis;
+}

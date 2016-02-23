@@ -141,17 +141,24 @@ class Message extends AppModel {
      * @param messageid int
      * @return array result of messages array
      */
-    public function fetchMessageDetailsById($mid = 0) {
+    public function fetchMessageDetailsById($mtype = "", $mid = 0) {
         try {
             $conditions = array(
                 'Message.row_status' => 1,
-                'Message.id' => $mid,
-                'Message.status' => 2001
+                'Message.id' => $mid
             );
+            if ($mtype == "inbox") {
+                $this->hasMany['MessageReceiver']['conditions']['MessageReceiver.type'] = 12002;
+            } else if ($mtype == "outbox") {
+                $this->hasMany['MessageReceiver']['conditions']['MessageReceiver.type'] = 12001;
+            } else if ($mtype == "trash") {
+                $this->hasMany['MessageReceiver']['conditions']['MessageReceiver.type'] = 12003;
+            }
             $result = $this->find("all", array(
                 'conditions' => $conditions,
                 'recursive' => 2
             ));
+            //pr($result);exit;
             return (!empty($result))?array_shift($result):array();
         } catch (Exception $e) {
             return false;

@@ -43,12 +43,16 @@ class MessagesController extends AppController {
      *    or MissingViewException in debug mode.
      */
     function beforeFilter() {
+        $accessArray = array('index','composeEmail', 'viewMessage','getUserEmails','sentMail','downloaddoc','downloadall','createZipFile','trashMessages','moveMessageToTrash','trashById');
         $this->guestActions = array();
         $this->superadminActions = array('admin_inbox','index','composeEmail');
         $this->adminActions = array();
-        $this->instituteAdminActions = array('index','composeEmail', 'viewMessage','getUserEmails','sentMail','downloaddoc','downloadall','createZipFile','trashMessages','moveMessageToTrash');
-        $this->branchActions = array();
-        $this->userActions = array();
+        $this->instituteAdminActions = $accessArray;
+        $this->branchActions = $accessArray;
+        $this->userActions = $accessArray;
+        $this->teacherActions = $accessArray;
+        $this->accountantActions = $accessArray;
+        $this->parentActions = $accessArray;
         parent::beforeFilter();
         $this->UserAuth->allow('');
         $this->set('active_tab', 'users');
@@ -111,7 +115,7 @@ class MessagesController extends AppController {
                         'table' => 'messages',
                         'alias' => 'Messages',
                         'type' => 'left',
-                        'conditions' => array('MessageReceiver.message_id = Messages.id',)
+                        'conditions' => array('MessageReceiver.message_id = Messages.id')
                     ),
                     array(
                         'table' => 'users',
@@ -128,9 +132,9 @@ class MessagesController extends AppController {
             if (isset($result["aaData"])) {
                 foreach ($result["aaData"] as $key => $val):
                     $formattedArray[$key]["MessageReceiver"]["id"] = '<input type="checkbox" class="check-message" name="readstatus[]" value="'.$val['MessageReceiver']['id'].'">';
-                    $formattedArray[$key]["Users"]["first_name"] = '<a href="' . Router::url('/', true) . 'messages/viewMessage/' . $val["Messages"]["id"] . '">'.ucwords($val['Users']['first_name']).'</a>';
+                    $formattedArray[$key]["Users"]["first_name"] = '<a href="' . Router::url('/', true) . 'messages/viewMessage/inbox/' . $val["Messages"]["id"] . '">'.ucwords($val['Users']['first_name']).'</a>';
                     $formattedArray[$key]["MessageReceiver"]["status"] = $val['MessageReceiver']['status'];
-                    $formattedArray[$key]["Messages"]["subject"] = '<a href="' . Router::url('/', true) . 'messages/viewMessage/' . $val["Messages"]["id"] . '">'.$val['Messages']['subject'].'</a>';
+                    $formattedArray[$key]["Messages"]["subject"] = '<a href="' . Router::url('/', true) . 'messages/viewMessage/inbox/' . $val["Messages"]["id"] . '">'.$val['Messages']['subject'].'</a>';
                     $formattedArray[$key]["Messages"]["time_created"] = date("H:m A", strtotime($val['Messages']['time_created']));
                 endforeach;
             }
@@ -209,19 +213,19 @@ class MessagesController extends AppController {
     }
     
     public function getUserEmails() {
-        $where_array['term'] = $_GET['term'];
+        $where_array['term'] = $_GET['q'];
         $users = $this->User->fetchAllUsers($where_array);
         $temp = array();
         foreach ($users as $key => $value) {
-            $temp[$key]['code'] = $value['User']['id'];
-            $temp[$key]['value'] = $value['User']['email'];
-            $temp[$key]['full_name'] = $value['User']['first_name']." ".$value['User']['last_name'];
+            $temp[$key]['id'] = $value['User']['id'];
+            $temp[$key]['email'] = $value['User']['email'];
+            $temp[$key]['name'] = $value['User']['first_name']." ".$value['User']['last_name'];
         }
         echo json_encode($temp);
         exit;
     }
 
-    public function viewMessage($id = 0) {
+    public function viewMessage($type = "", $id = 0) {
         $conditions = array(
                             "MessageReceiver.message_id" => $id,
                             "MessageReceiver.receiver_id" => AuthComponent::user('id'),
@@ -231,9 +235,26 @@ class MessagesController extends AppController {
                         "MessageReceiver.status" => 10001
                       );
         $result = $this->MessageReceiver->updateMessageStatus($updateData, $conditions);
-        $message_details = $this->Message->fetchMessageDetailsById($id);
-        //pr($message_details);exit;
-        $this->set('messageinfo', $message_details);
+        $message_details = array();
+        if ($result) {
+            if ($type == "inbox" && $id != 0) {
+                $message_details = $this->Message->fetchMessageDetailsById($type, $id);
+            } else if ($type == "outbox" && $id != 0) {
+                $message_details = $this->Message->fetchMessageDetailsById($type, $id);
+            } else if ($type == "trash" && $id != 0) {
+                $message_details = $this->Message->fetchMessageDetailsById($type, $id);
+            } else {
+                $msg = __('Something went wrong!');
+                $this->_setFlashMsgs($msg, 'danger');
+                $this->redirect(array("controller" => "messages", "action" => "index"),$exit);
+            }
+            $this->set('messageinfo', $message_details);
+            $this->set('type', $type);
+        } else {
+            $msg = __('Something went wrong!');
+            $this->_setFlashMsgs($msg, 'danger');
+           $this->redirect(array("controller" => "messages", "action" => "index"),$exit);
+        }
     }
     
     public function sentMail() {
@@ -285,9 +306,9 @@ class MessagesController extends AppController {
             if (isset($result["aaData"])) {
                 foreach ($result["aaData"] as $key => $val):
                     $formattedArray[$key]["MessageReceiver"]["id"] = '<input type="checkbox" class="check-message" name="read_status" id="read_status" value="'.$val['MessageReceiver']['id'].'">';
-                    $formattedArray[$key]["Users"]["first_name"] = '<a href="' . Router::url('/', true) . 'messages/viewMessage/' . $val["Messages"]["id"] . '">'.ucwords($val[0]['user_names']).'</a>';
+                    $formattedArray[$key]["Users"]["first_name"] = '<a href="' . Router::url('/', true) . 'messages/viewMessage/outbox/' . $val["Messages"]["id"] . '" class="message-receviers">'.ucwords($val[0]['user_names']).'</a><span>'.((count(explode(",", $val[0]['user_names']))>1)?"(".count(explode(",", $val[0]['user_names'])).")":"").'</span>';
                     $formattedArray[$key]["MessageReceiver"]["status"] = $val['MessageReceiver']['status'];
-                    $formattedArray[$key]["Messages"]["subject"] = '<a href="' . Router::url('/', true) . 'messages/viewMessage/' . $val["Messages"]["id"] . '">'.$val['Messages']['subject'].'</a>';
+                    $formattedArray[$key]["Messages"]["subject"] = '<a href="' . Router::url('/', true) . 'messages/viewMessage/outbox/' . $val["Messages"]["id"] . '">'.$val['Messages']['subject'].'</a>';
                     $formattedArray[$key]["Messages"]["time_created"] = date("H:m A", strtotime($val['Messages']['time_created']));
                 endforeach;
             }
@@ -382,9 +403,9 @@ public function trashMessages() {
             if (isset($result["aaData"])) {
                 foreach ($result["aaData"] as $key => $val):
                     $formattedArray[$key]["MessageReceiver"]["id"] = '<input type="checkbox" class="" name="readstatus[]" id="read_status" value="'.$val['MessageReceiver']['id'].'">';
-                    $formattedArray[$key]["Users"]["first_name"] = '<a href="' . Router::url('/', true) . 'messages/viewMessage/' . $val["Messages"]["id"] . '">'.ucwords($val['Users']['first_name']).'</a>';
+                    $formattedArray[$key]["Users"]["first_name"] = '<a href="' . Router::url('/', true) . 'messages/viewMessage/trash/' . $val["Messages"]["id"] . '">'.ucwords($val['Users']['first_name']).'</a>';
                     $formattedArray[$key]["MessageReceiver"]["status"] = $val['MessageReceiver']['status'];
-                    $formattedArray[$key]["Messages"]["subject"] = '<a href="' . Router::url('/', true) . 'messages/viewMessage/' . $val["Messages"]["id"] . '">'.$val['Messages']['subject'].'</a>';
+                    $formattedArray[$key]["Messages"]["subject"] = '<a href="' . Router::url('/', true) . 'messages/viewMessage/trash/' . $val["Messages"]["id"] . '">'.$val['Messages']['subject'].'</a>';
                     $formattedArray[$key]["Messages"]["time_created"] = date("H:m A", strtotime($val['Messages']['time_created']));
                 endforeach;
             }
@@ -416,5 +437,34 @@ public function moveMessageToTrash() {
     }
 }
 
+public function trashById($type = "",$id = 0 ) {
+    if ($id != 0) {
+        $conditions = array(
+            "MessageReceiver.row_status" => 1,
+            "MessageReceiver.message_id" => $id,
+            "MessageReceiver.receiver_id" => $this->userId
+        );
+        $updateData = array(
+            "MessageReceiver.type" => 12003
+        );
+        if ($type == "inbox" && $id != 0) {
+            $conditions['MessageReceiver.type'] = 12001;
+        } else if ($type == "outbox" && $id != 0) {
+            $conditions['MessageReceiver.type'] = 12002;
+        }
+        $result = $this->MessageReceiver->moveTrashById($conditions, $updateData);
+        if($result) {
+            if ($type == "inbox") {
+                $this->redirect(array("controller" => "messages", "action" => "index"),$exit);
+            } else if ($type == "outbox") {
+                $this->redirect(array("controller" => "messages", "action" => "sentMail"),$exit);
+            }
+        } else {
+            $msg = __('Something went wrong!');
+            $this->_setFlashMsgs($msg, 'danger');
+            $this->redirect(array("controller" => "messages", "action" => "viewMessage",$type,$id),$exit);
+        }
+    }
+}
             }
 ?>

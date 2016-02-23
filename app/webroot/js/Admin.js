@@ -7,6 +7,7 @@
 var ajaxFlag = false;
 var abortAjaxFlag = '';
 var dataTable = '';
+var terms = [];
 $(window).load(function () {
     $("#spinner").fadeOut("slow");
 });
@@ -44,7 +45,7 @@ $(document).ready(function () {
     function extractLast(term) {
         return split(term).pop();
     }
-    $("#MessageToMail")
+    /*$("#MessageToMail")
             .autocomplete({
                 source: function (request, response) {
                     $.getJSON(SITEURL + "Messages/getUserEmails", {
@@ -79,7 +80,24 @@ $(document).ready(function () {
                 return $( "<li>" )
                   .append( "<a style='border-bottom:2px solid #f4f4f4;'>" + item.value + "<br>" + item.full_name + "</a>" )
                   .appendTo( ul );
-              };
+              };*/
+    $("#MessageToMail")
+        .tokenInput(SITEURL + "Messages/getUserEmails", {
+            propertyToSearch: "email",
+            resultsFormatter: function(item){ return "<li>" +  "<div style='display: inline-block; padding-left: 10px;'><div class='full_name'>" + item.name + "</div><div class='email'>" + item.email + "</div></div></li>" },
+            tokenFormatter: function(item) { return "<li><p>" + item.name +  "</p></li>" },
+            onAdd: function (item) {
+                terms.push(item.id);
+                $("#MessageToid").val(terms);
+            },
+            onDelete: function (item) {
+                if (terms.indexOf(item.id) > -1) {
+                    terms.splice(terms.indexOf(item.id),1);
+                    $("#MessageToid").val(terms);
+                }
+            }
+        });
+            
     $("#attach_id").click(function () {
         $('.disp-hide').click();
     });

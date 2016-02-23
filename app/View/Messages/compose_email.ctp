@@ -20,7 +20,7 @@
                             <li><a href="<?php echo $this->Html->Url(array("controller"=>"messages","action"=>"sentMail"));?>"> <i class="fa fa-envelope-o"></i> Send Mail</a></li>
                             <!--li><a href="mailbox.html"> <i class="fa fa-certificate"></i> Important</a></li-->
                             <!--li><a href="<?php echo $this->Html->Url(array("controller"=>"messages","action"=>"index"));?>"> <i class="fa fa-file-text-o"></i> Drafts <span class="label label-danger pull-right">2</span></a></li-->
-                            <li><a href="<?php echo $this->Html->Url(array("controller"=>"messages","action"=>"index"));?>"> <i class="fa fa-trash-o"></i> Trash</a></li>
+                            <li><a href="<?php echo $this->Html->Url(array("controller"=>"messages","action"=>"trashMessages"));?>"> <i class="fa fa-trash-o"></i> Trash</a></li>
                         </ul>
                         <div class="clearfix"></div>
                     </div>
@@ -54,7 +54,7 @@
                             <?php
                                 echo  $this->AppForm->input('to_mail',array(
                                     'type'=>'text',
-                                    'class'=>'form-control to-mail required',
+                                    'class'=>'to-mail',
                                     'label'=>false,
                                     'div'=>false
                                 ));

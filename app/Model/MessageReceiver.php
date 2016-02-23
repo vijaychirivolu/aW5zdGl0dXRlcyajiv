@@ -36,6 +36,13 @@ App::uses('AppModel', 'Model');
 class MessageReceiver extends AppModel {
     
     public $name = 'MessageReceiver';
+    public $belongsTo = array(
+        'User' => array(
+            'className' => 'User',
+            'foreignKey' => 'receiver_id',
+            'conditions' => array('User.row_status' => '1')
+        )
+    );
     //public $uploadDir = 'files/schools/';
     
     
@@ -157,6 +164,20 @@ class MessageReceiver extends AppModel {
      * @return boolean
      */
     public function moveMessageTrash($updateData, $conditions) {
+        try {
+            return $this->updateAll($updateData, $conditions);
+        } catch (Exception $e) {
+            return false;
+        }
+    }
+    
+    /**
+     * Function to move the message to trash by using its id
+     * @param $conditions array
+     * @param $updateData array
+     * @return boolean
+     */
+    public function moveTrashById($conditions, $updateData) {
         try {
             return $this->updateAll($updateData, $conditions);
         } catch (Exception $e) {

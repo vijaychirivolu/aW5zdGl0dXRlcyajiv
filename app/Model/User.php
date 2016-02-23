@@ -34,7 +34,8 @@ App::uses('AppModel', 'Model');
  * @link        http://localhost/cacsv2/index
  */
 class User extends AppModel {
-    
+    public $userId = "";
+    public $instituteId = "";
     public $name = 'User';
 
     public $hasMany = array(
@@ -118,8 +119,9 @@ class User extends AppModel {
                 }
             }
         }
-        $userId = AuthComponent::user('id');
-        $this->data[$this->alias]['requested_by'] = ($userId != "") ? $userId : 0;
+        $this->userId = AuthComponent::user('id');
+        $this->instituteId = AuthComponent::user('institute_id');
+        $this->data[$this->alias]['requested_by'] = ($this->userId != "") ? $this->userId : 0;
         return parent::beforeSave($options);
     }
 
@@ -186,7 +188,7 @@ class User extends AppModel {
                         'type' => 'left',
                         'conditions' => array('User.school_id = School.id')
                     )
-                ),
+                )
             ));
             //pr($result);exit;
             return (!empty($result)) ? $result : array();
@@ -300,13 +302,26 @@ class User extends AppModel {
             $conditions = array(
                 'User.row_status' => 1,
                 'User.id != ' => $_SESSION['Auth']['User']['id'],
-                'User.email LIKE' => "%".$where_array['term']."%"
+                'User.email LIKE' => "%".$where_array['term']."%",
+                'UserAccessLevel.institute_id' => AuthComponent::user('institute_id')
             );
             $result = $this->find("all", array(
-                'conditions' => $conditions
+                'fields' => array(
+                    'User.*'
+                ),
+                'conditions' => $conditions,
+                'joins' => array(
+                    array(
+                        'table' => 'user_access_levels',
+                        'alias' => 'UserAccessLevel',
+                        'type' => 'left',
+                        'conditions' => array('User.id = UserAccessLevel.id')
+                    )
+                )
             ));
             return (!empty($result)) ? $result : array();
         } catch (Exception $e) {
+            pr($e->getMessage());exit;
             //log_message('error', $this->db->_error_message()); //error message when query is wrong
             return false;
         }

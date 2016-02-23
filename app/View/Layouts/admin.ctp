@@ -79,8 +79,12 @@
                 echo $this->Html->css('plugins/tree-multiselect/jquery.tree-multiselect');
                 echo $this->Html->css('plugins/iCheck/custom');
                 echo $this->Html->css('jquery-checktree');
-                echo $this->Html->css('jquery-ui.min.css');
+                echo $this->Html->css('jquery-ui.min');
+                
+                echo $this->Html->css('token-input');
+                echo $this->Html->css('token-input-facebook');
                 echo $this->Html->css('developer');
+                
             } else {
                echo $this->Minify->css($cssArray);
                echo $this->Html->css('/font-awesome/css/font-awesome');
@@ -135,8 +139,10 @@
                 'Admin'
             );
             if (ENVIRONMENT == "development") {
+                echo $this->Html->script('jquery.min');
                 echo $this->Html->script('jquery-2.1.1');
                 echo $this->Html->script('bootstrap.min');
+                
                 echo $this->Html->script('plugins/metisMenu/jquery.metisMenu');
                 echo $this->Html->script('plugins/slimscroll/jquery.slimscroll.min');
 
@@ -166,6 +172,7 @@
                 echo $this->Html->script('plugins/tree-multiselect/jquery.tree-multiselect');
                 echo $this->Html->script('jquery-checktree');
                 echo $this->Html->script('plugins/jquery-ui/jquery-ui.min');
+                echo $this->Html->script('jquery.tokeninput');
                 echo $this->Html->script('Admin');
             } else {
                 echo $this->Minify->script($jsArray);
