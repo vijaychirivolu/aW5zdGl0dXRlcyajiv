@@ -215,6 +215,7 @@ class MessagesController extends AppController {
         foreach ($users as $key => $value) {
             $temp[$key]['code'] = $value['User']['id'];
             $temp[$key]['value'] = $value['User']['email'];
+            $temp[$key]['full_name'] = $value['User']['first_name']." ".$value['User']['last_name'];
         }
         echo json_encode($temp);
         exit;

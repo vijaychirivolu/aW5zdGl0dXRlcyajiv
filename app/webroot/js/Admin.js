@@ -45,12 +45,6 @@ $(document).ready(function () {
         return split(term).pop();
     }
     $("#MessageToMail")
-            .bind("keydown", function (event) {
-                if (event.keyCode === $.ui.keyCode.TAB &&
-                        $(this).autocomplete("instance").menu.active) {
-                    event.preventDefault();
-                }
-            })
             .autocomplete({
                 source: function (request, response) {
                     $.getJSON(SITEURL + "Messages/getUserEmails", {
@@ -73,7 +67,7 @@ $(document).ready(function () {
                     // remove the current input
                     terms.pop();
                     // add the selected item
-                    terms.push(ui.item.value);
+                    terms.push(ui.item.full_name);
                     to_id.push(ui.item.code);
                     $("#MessageToid").val(to_id);
                     // add placeholder to get the comma-and-space at the end
@@ -81,7 +75,11 @@ $(document).ready(function () {
                     this.value = terms.join(", ");
                     return false;
                 }
-            });
+            }).data("ui-autocomplete")._renderItem = function( ul, item ) {
+                return $( "<li>" )
+                  .append( "<a style='border-bottom:2px solid #f4f4f4;'>" + item.value + "<br>" + item.full_name + "</a>" )
+                  .appendTo( ul );
+              };
     $("#attach_id").click(function () {
         $('.disp-hide').click();
     });
