@@ -41,7 +41,7 @@
                 <div class="mail-body">
                     <?php  
                         echo $this->AppForm->create('Message', array(
-                            'class' => 'form-horizontal ajax-form ', 
+                            'class' => 'form-horizontal ajax-form', 
                             'method' => 'post',
                             'enctype' => 'multipart/form-data',
                             'novalidate'
@@ -54,7 +54,7 @@
                             <?php
                                 echo  $this->AppForm->input('to_mail',array(
                                     'type'=>'text',
-                                    'class'=>'to-mail',
+                                    'class'=>'form-control to-mail',
                                     'label'=>false,
                                     'div'=>false
                                 ));

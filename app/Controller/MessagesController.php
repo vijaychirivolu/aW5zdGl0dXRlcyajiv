@@ -35,7 +35,7 @@ class MessagesController extends AppController {
 
     public $uses = array('MessageReceiver','User', 'Message', 'MessageAttachment');
     public $components = array('NotificationEmail','DataTable','Custom');
-
+    
     /**
      * Before filter
      * @return void
@@ -145,6 +145,11 @@ class MessagesController extends AppController {
     }
 
     public function composeEmail($id=0) {
+        if (!$this->request->is('ajax')) {
+            $messageData = $this->Message->fetchMessageDetails($id);
+            $this->request->data['Message']['subject'] = $messageData['Message']['subject'];
+            $this->request->data['Message']['body'] = $messageData['Message']['body'];
+        } else {
         $postData = $this->request->data;
         if (!empty($postData)) {
             if (isset($postData['Message']['file']) && $postData['Message']['file'][0]['name'] != "" && $postData["Message"]['file'][0]["error"] == 0) {
@@ -210,6 +215,7 @@ class MessagesController extends AppController {
                     $this->_setFlashMsgs($msg, 'danger');
                 }
             }
+        }
     }
     
     public function getUserEmails() {

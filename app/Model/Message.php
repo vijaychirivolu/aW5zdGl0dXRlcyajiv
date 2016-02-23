@@ -145,7 +145,8 @@ class Message extends AppModel {
         try {
             $conditions = array(
                 'Message.row_status' => 1,
-                'Message.id' => $mid
+                'Message.id' => $mid,
+                'Message.institute_id' => AuthComponent::user('institute_id')
             );
             if ($mtype == "inbox") {
                 $this->hasMany['MessageReceiver']['conditions']['MessageReceiver.type'] = 12002;
@@ -157,6 +158,29 @@ class Message extends AppModel {
             $result = $this->find("all", array(
                 'conditions' => $conditions,
                 'recursive' => 2
+            ));
+            //pr($result);exit;
+            return (!empty($result))?array_shift($result):array();
+        } catch (Exception $e) {
+            return false;
+        }
+    }
+    
+    /**
+     * Fetch Message details
+     * @param messageid
+     * @return array messagedata
+     */
+    public function fetchMessageDetails($id) {
+        try {
+            $conditions = array(
+                'Message.row_status' => 1,
+                'Message.id' => $id,
+                'Message.institute_id' => AuthComponent::user('institute_id')
+            );
+            $result = $this->find("all", array(
+                'conditions' => $conditions,
+                'recursive' => -1
             ));
             //pr($result);exit;
             return (!empty($result))?array_shift($result):array();
