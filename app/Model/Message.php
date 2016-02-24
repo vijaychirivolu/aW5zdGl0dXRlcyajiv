@@ -180,7 +180,7 @@ class Message extends AppModel {
             );
             $result = $this->find("all", array(
                 'conditions' => $conditions,
-                'recursive' => -1
+                'recursive' => 2
             ));
             //pr($result);exit;
             return (!empty($result))?array_shift($result):array();
