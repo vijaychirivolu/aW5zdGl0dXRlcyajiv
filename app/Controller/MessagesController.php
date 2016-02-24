@@ -146,18 +146,31 @@ class MessagesController extends AppController {
 
     public function composeEmail($id=0) {
         if (!$this->request->is('ajax')) {
-            $messageData = $this->Message->fetchMessageDetails($id);
-            $this->request->data['Message']['subject'] = $messageData['Message']['subject'];
-            $this->request->data['Message']['body'] = $messageData['Message']['body'];
+            if ($id > 0) {
+                $messageData = $this->Message->fetchMessageDetails($id);
+                $this->request->data['Message']['subject'] = $messageData['Message']['subject'];
+                $this->request->data['Message']['body'] = $messageData['Message']['body'];
+                $this->set("attachmentDetails", $messageData['MessageAttachment']);
+            }
         } else {
         $postData = $this->request->data;
         if (!empty($postData)) {
             if (isset($postData['Message']['file']) && $postData['Message']['file'][0]['name'] != "" && $postData["Message"]['file'][0]["error"] == 0) {
                 $postData['Message']['has_attechments'] = count($postData['Message']['file']);
             }
-            //pr($postData);exit;
-            $result = $this->Message->saveMessage($postData);
-            $postData['Message']['message_id'] = $result['Message']['id'];
+            if ($id > 0) {
+                $result = $this->Message->fetchMessageDetails($id);
+                if (empty($result) || count($result) == 0) {
+                    $result = $this->Message->saveMessage($postData);
+                    $postData['Message']['message_id'] = $result['Message']['id'];
+                } else {
+                    $postData['Message']['message_id'] = $id;
+                }
+            } else {
+                $result = $this->Message->saveMessage($postData);
+                $postData['Message']['message_id'] = $result['Message']['id'];
+            }
+            
             $result = $this->MessageReceiver->saveMessageReceiver($postData);
             if (isset($postData['Message']['file']) && $postData['Message']['file'][0]['name'] != "" && $postData["Message"]['file'][0]["error"] == 0) {
                 $postData['Message']['has_attachments'] = count($postData['Message']['file']);
@@ -311,7 +324,7 @@ class MessagesController extends AppController {
             $formattedArray = array();
             if (isset($result["aaData"])) {
                 foreach ($result["aaData"] as $key => $val):
-                    $formattedArray[$key]["MessageReceiver"]["id"] = '<input type="checkbox" class="check-message" name="read_status" id="read_status" value="'.$val['MessageReceiver']['id'].'">';
+                    $formattedArray[$key]["MessageReceiver"]["id"] = '<input type="checkbox" class="check-message " name="read_status" id="read_status" value="'.$val['MessageReceiver']['id'].'">';
                     $formattedArray[$key]["Users"]["first_name"] = '<a href="' . Router::url('/', true) . 'messages/viewMessage/outbox/' . $val["Messages"]["id"] . '" class="message-receviers">'.ucwords($val[0]['user_names']).'</a><span>'.((count(explode(",", $val[0]['user_names']))>1)?"(".count(explode(",", $val[0]['user_names'])).")":"").'</span>';
                     $formattedArray[$key]["MessageReceiver"]["status"] = $val['MessageReceiver']['status'];
                     $formattedArray[$key]["Messages"]["subject"] = '<a href="' . Router::url('/', true) . 'messages/viewMessage/outbox/' . $val["Messages"]["id"] . '">'.$val['Messages']['subject'].'</a>';

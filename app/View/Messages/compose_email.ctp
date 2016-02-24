@@ -96,14 +96,27 @@
                             ));
                         ?>
                     </div>
+                    <div class="form-group">
+                        <?php
+                            foreach ($attachmentDetails as $key => $value) {
+                        ?>
+                            <ul class="token-input-list" style="border:none">
+                                <li class="token-input-token">
+                                    <a href="<?php echo Router::url('/', true).'messages/downloaddoc/'.$value['filename'] ?>"><?php echo $value['filename']; ?></a>
+                                    <span class="token-input-delete-token">×</span>
+                                </li>
+                            </ul>
+                        <?php
+                            }
+                        ?>
+                    </div>
                     <div class="mail-body text-right attachment-class">
                         <label class="no-of-attachments"></label>
                         <a id="attach_id" class="btn btn-white btn-sm" ><i class="fa fa-paperclip"></i> Attach</a>
                         <button type="submit" id="send_button" class="btn btn-sm btn-primary" data-toggle="tooltip" data-placement="top" title="Send"><i class="fa fa-reply"></i> Send</button>
-                        <a href="mailbox.html" class="btn btn-white btn-sm" data-toggle="tooltip" data-placement="top" title="Discard email"><i class="fa fa-times"></i> Discard</a>
-                        <a href="mailbox.html" class="btn btn-white btn-sm" data-toggle="tooltip" data-placement="top" title="Move to draft folder"><i class="fa fa-pencil"></i> Draft</a>
+                        <a href="#" class="btn btn-white btn-sm" data-toggle="tooltip" data-placement="top" title="Discard email"><i class="fa fa-times"></i> Discard</a>
+                        <a href="#" class="btn btn-white btn-sm" data-toggle="tooltip" data-placement="top" title="Move to draft folder"><i class="fa fa-pencil"></i> Draft</a>
                     </div>
-                    
                 </div>
                 <div class="clearfix"></div>
                  <?php echo $this->AppForm->end(); ?>
