@@ -37,7 +37,7 @@ class Student extends AppModel {
 
     public $name = 'Student';
     public $uploadDir = 'files/students/';
-    
+    var $actsAs = array('StoredProcedure');
     public $belongsTo = array(
         'ClassInfo' => array(
             'className' => 'ClassInfo',
@@ -315,10 +315,8 @@ class Student extends AppModel {
     }
     
     public function getStudentCntByInstituteId($instituteId=0){
-        $sqlstr="SELECT count(1) as StdCount FROM students WHERE institute_id in (SELECT id FROM institutes where parent_id =".$instituteId." and row_status=1 union SELECT id FROM institutes where id =".$instituteId." and row_status=1) and row_status=1";
-        //$sqlstr="SELECT count(1) as StdCount FROM students WHERE row_status=1";
-        $result=$this->query($sqlstr);
-//        pr($sqlstr);pr($result);exit;
+        $inParams=array(0=>$instituteId);
+        $result = $this->executeMssqlSp('spGetStudentCountByInstituteId', $inParams );
         return isset($result[0][0]['StdCount'])?$result[0][0]['StdCount']:0;
     }
 

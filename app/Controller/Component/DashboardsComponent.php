@@ -32,11 +32,13 @@ class DashboardsComponent extends Component{
         return $this->Employee->getEmployeeCntByInstituteId($instituteId);
     }
     
-    public function getNewMessageCntByRecieverId($instituteId){
-        return $this->MessageReceiver->getNewMessageCntByRecieverId($instituteId);
+    public function getNewMessageCntByRecieverId($instituteId,$receiverId){
+        return $this->MessageReceiver->getNewMessageCntByRecieverId($instituteId,$receiverId);
     }
     
-    public function getNewMessagesByRecieverId($instituteId){
-        return $this->MessageReceiver->getNewMessagesByRecieverId($instituteId);
+    public function getNewMessagesByRecieverId($instituteId,$receiverId){
+        return $this->MessageReceiver->getNewMessagesByRecieverId($instituteId,$receiverId);
     }
+    
+    
 }

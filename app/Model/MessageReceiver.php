@@ -43,6 +43,7 @@ class MessageReceiver extends AppModel {
             'conditions' => array('User.row_status' => '1')
         )
     );
+    var $actsAs = array('StoredProcedure');
     //public $uploadDir = 'files/schools/';
     
     
@@ -183,5 +184,69 @@ class MessageReceiver extends AppModel {
         } catch (Exception $e) {
             return false;
         }
+    }
+    
+    public function getNewMessageCntByRecieverId($instituteId=0,$recieverId=0){
+        $inParams=array(0=>$instituteId,1=>$recieverId);
+        $output = $this->executeMssqlSp('spGetUnreadMsgByReceiverId', $inParams );
+        if(is_array($output) && $output!=NULL){
+            $result['NewMsg']=$output[0][0]['MsgCount'];
+            $result['DraftMsg']=$output[1][0]['MsgCount'];
+            return $result;
+        }
+        return NULL;
+    }
+    
+    public function getNewMessagesByRecieverId($instituteId=0,$recieverId=0){
+        $inParams=array(0=>$instituteId,1=>$recieverId);
+        $output = $this->executeMssqlSp('spGetNewMsgByReceiverId', $inParams );
+        $result=NULL;
+        if(is_array($output) && $output!=NULL){
+            foreach ($output as $row=>$value){
+                $result[$row]['receiver_id']=$value['mr']['receiver_id'];
+                $result[$row]['message_id']=$value['mr']['message_id'];
+                $result[$row]['student_id']=$value['mr']['student_id'];
+                $result[$row]['time_created']=$value['mr']['time_created'];
+                $result[$row]['institute_id']=$value['msg']['institute_id'];
+                $result[$row]['sender_id']=$value['msg']['sender_id'];
+                $result[$row]['subject']=($value['msg']['subject']!='' || $value['msg']['subject']!=NULL)?$value['msg']['subject']:'No Subject';
+                $result[$row]['body']=($value['msg']['body']!='' || $value['msg']['body']!=NULL)?$value['msg']['body']:'No Message Body';
+                $result[$row]['SenderName']=($value[0]['SenderName']!='' || $value[0]['SenderName']!=NULL)?ucfirst($value[0]['SenderName']):'';
+                $result[$row]['RecivedOnDate']=$value[0]['RecivedOnDate'];
+                $timeConvert=$this->__getRecivedTimeFormat($value[0]['RecivedTime']);
+                $result[$row]['RecivedTime']=  $timeConvert[0];
+                $result[$row]['RecivedOnTime']=  isset($timeConvert[1])?$timeConvert[1].$value[0]['RecivedOnTime']:'Today '.$value[0]['RecivedOnTime'];
+                $result[$row]['RecivedDays']=$value[0]['RecivedDays'];
+                
+            } 
+        }
+        return $result;
+    }
+    
+    private function __getRecivedTimeFormat($time=''){
+        if($time!=null || $time!='' || $time>0){
+            $hr=(int)substr($time, 0,strpos($time, ':'));
+            $min=(int)substr($time, 3,2);
+            $sec=(int)substr($time, 6,2);
+            if($hr>0){
+                if($hr<=24)
+                    $resultentTime[0]=$hr.' hours ago ';
+                else if(ceil($hr/24)==1)
+                    $resultentTime[0]=$resultentTime[1]='Yesterday ';
+                else {
+                    $resultentTime[0]=  $resultentTime[1]=ceil($hr/24).' days ago ';
+                }
+            }else if($min>0){
+                $resultentTime[0]=$min.' mins ago ';
+            }else if($sec>0){
+                $resultentTime[0]=$sec.' sec agos ';
+            }  else {
+                $resultentTime[0]='0 sec ago ';
+            }
+//            $resultentTime=($hr>0)?($hr<=24)?$hr.' hours ago':ceil($hr/24).' days ago':($min>0?$min.' mins ago':($sec>0?$sec.' sec ago':'0 sec ago'));
+        }  else {
+            $resultentTime[0]='0 secsago';
+        }
+        return $resultentTime;
     }
 }
