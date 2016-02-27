@@ -327,7 +327,7 @@ class MessagesController extends AppController {
             $formattedArray = array();
             if (isset($result["aaData"])) {
                 foreach ($result["aaData"] as $key => $val):
-                    $formattedArray[$key]["MessageReceiver"]["id"] = '<input type="checkbox" class="check-message " name="read_status" id="read_status" value="'.$val['MessageReceiver']['id'].'">';
+                    $formattedArray[$key]["MessageReceiver"]["id"] = '<input type="checkbox" class="check-message" name="read_status[]" id="read_status" value="'.$val['MessageReceiver']['id'].'">';
                     $formattedArray[$key]["Users"]["first_name"] = '<a href="' . Router::url('/', true) . 'messages/viewMessage/outbox/' . $val["Messages"]["id"] . '" class="message-receviers">'.ucwords($val[0]['user_names']).'</a><span>'.((count(explode(",", $val[0]['user_names']))>1)?"(".count(explode(",", $val[0]['user_names'])).")":"").'</span>';
                     $formattedArray[$key]["MessageReceiver"]["status"] = $val['MessageReceiver']['status'];
                     $formattedArray[$key]["Messages"]["subject"] = '<a href="' . Router::url('/', true) . 'messages/viewMessage/outbox/' . $val["Messages"]["id"] . '">'.$val['Messages']['subject'].'</a>';
