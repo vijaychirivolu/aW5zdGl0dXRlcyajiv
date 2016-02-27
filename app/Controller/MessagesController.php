@@ -159,17 +159,10 @@ class MessagesController extends AppController {
                 $postData['Message']['has_attechments'] = count($postData['Message']['file']);
             }
             if ($id > 0) {
-                $result = $this->Message->fetchMessageDetails($id);
-                if (empty($result) || count($result) == 0) {
-                    $result = $this->Message->saveMessage($postData);
-                    $postData['Message']['message_id'] = $result['Message']['id'];
-                } else {
-                    $postData['Message']['message_id'] = $id;
-                }
-            } else {
-                $result = $this->Message->saveMessage($postData);
-                $postData['Message']['message_id'] = $result['Message']['id'];
+                $messageDetails = $this->Message->fetchMessageDetails($id);
             }
+            $result = $this->Message->saveMessage($postData);
+            $postData['Message']['message_id'] = $result['Message']['id'];
             
             $result = $this->MessageReceiver->saveMessageReceiver($postData);
             if (isset($postData['Message']['file']) && $postData['Message']['file'][0]['name'] != "" && $postData["Message"]['file'][0]["error"] == 0) {
@@ -191,8 +184,18 @@ class MessagesController extends AppController {
                 }
                 $result = $this->MessageAttachment->saveUserAttachments($uploadHistoryData);
             }
+            if($id > 0 && count($messageDetails['MessageAttachment']) > 0) {
+                $temp = array();
+                foreach ($messageDetails['MessageAttachment'] as $key => $value) {
+                    $temp['MessageAttachment'][$key]['message_id'] =  $postData['Message']['message_id'];
+                    $temp['MessageAttachment'][$key]['original_filename'] = $value['original_filename'];
+                    $temp['MessageAttachment'][$key]['filename'] = $value['filename'];
+                    $temp['MessageAttachment'][$key]['time_created'] = date('Y-m-d H:m:i');
+                }
+                $result = $this->MessageAttachment->saveUserAttachments($temp);
+            }
             if ($result) {
-                $msg = __('You mail sent succesfully.');
+                $msg = __('Your mail sent succesfully.');
                 if ($this->request->is('ajax')) {
                     echo json_encode(array(
                         'status' => "success",
