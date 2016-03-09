@@ -19,15 +19,16 @@ function getStatus() {
                 var message = message + "<strong>Monica Smith</strong> love <strong>Kim Smith</strong>.<br>";
                 var message = message + "<small class='text-muted'>"+response[i]['MessageReceiver']['time_created']+"</small>";
                 var message = message + "</div></div></li>";
+                var message = message + "<li class='divider'></li>";
             }
-            var message = message + "<li class='divider'></li>";
+            //var message = message + "<li class='divider'></li>";
             var message = message + "<li><div class='text-center link-block'><a href='"+SITEURL+"/messages/index'>";
             var message = message + "<i class='fa fa-envelope'></i> <strong>Read All Messages</strong>";
             var message = message + "</a></div></li>";
             $(".dropdown-messages").html(message);
         }
     });
-    setTimeout("getStatus()",10000);
+    //setTimeout("getStatus()",10000);
 }
 
 /**
