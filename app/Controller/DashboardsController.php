@@ -91,8 +91,8 @@ class DashboardsController extends AppController {
         if ($this->instituteId != "") {
             $this->set('StudentCount',$this->Dashboards->getStudentCntByInstituteId($this->instituteId));
             $this->set('EmployeeCount',$this->Dashboards->getEmployeeCntByInstituteId($this->instituteId));
-            //$this->set('NewMsgCnt',$this->Dashboards->getNewMessageCntByRecieverId($this->instituteId));
-            //$this->set('NewMsg',$this->Dashboards->getNewMessagesByRecieverId($this->instituteId));
+            $this->set('NewMsgCnt',$this->Dashboards->getNewMessageCntByRecieverId($this->instituteId,  $this->userId));
+            $this->set('NewMsg',$this->Dashboards->getNewMessagesByRecieverId($this->instituteId, $this->userId));
         } else {
             $this->redirect($this->UserAuth->redirect());
         }

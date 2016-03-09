@@ -30,8 +30,8 @@
                 </div>
                 <div class="ibox-content">
                     <h1 class="no-margins"><?php echo isset($StudentCount)?$StudentCount:0;?></h1>
-                    <div class="stat-percent font-bold text-success">98% <i class="fa fa-bolt"></i></div>
-                    <small>Total income</small>
+                    <!--<div class="stat-percent font-bold text-success">98% <i class="fa fa-bolt"></i></div>-->
+                    <small>Total Students</small>
                 </div>
             </div>
         </div>
@@ -43,8 +43,8 @@
                 </div>
                 <div class="ibox-content">
                     <h1 class="no-margins"><?php echo isset($EmployeeCount)?$EmployeeCount:0;?></h1>
-                    <div class="stat-percent font-bold text-info">20% <i class="fa fa-level-up"></i></div>
-                    <small>New orders</small>
+                    <!--<div class="stat-percent font-bold text-info">20% <i class="fa fa-level-up"></i></div>-->
+                    <small>Total Teachers</small>
                 </div>
             </div>
         </div>
@@ -91,74 +91,28 @@
                 </div>
                 <div class="ibox-content ibox-heading">
                     <h3><i class="fa fa-envelope-o"></i> New messages</h3>
-                    <small><i class="fa fa-tim"></i> You have <?php echo isset($NewMsgCnt['NewMsgCount'])?$NewMsgCnt['NewMsgCount']:0?> new messages and <?php echo isset($NewMsgCnt['DraftMsgCnt'])?$NewMsgCnt['DraftMsgCnt']:0 ?> waiting in draft folder.</small>
+                    <small><i class="fa fa-tim"></i> You have <?php echo ($NewMsgCnt!=null && isset($NewMsgCnt['NewMsg']))?$NewMsgCnt['NewMsg']:0?> new messages and <?php echo ($NewMsgCnt!=NULL && isset($NewMsgCnt['DraftMsg']))?$NewMsgCnt['DraftMsg']:0 ?> waiting in draft folder.</small>
                 </div>
                 <div class="ibox-content">
                     <div class="feed-activity-list">
-
-                        <div class="feed-element">
-                            <div>
-                                <small class="pull-right text-navy">1m ago</small>
-                                <strong>Monica Smith</strong>
-                                <div>Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum</div>
-                                <small class="text-muted">Today 5:60 pm - 12.06.2014</small>
-                            </div>
-                        </div>
-
-                        <div class="feed-element">
-                            <div>
-                                <small class="pull-right">2m ago</small>
-                                <strong>Jogn Angel</strong>
-                                <div>There are many variations of passages of Lorem Ipsum available</div>
-                                <small class="text-muted">Today 2:23 pm - 11.06.2014</small>
-                            </div>
-                        </div>
-
-                        <div class="feed-element">
-                            <div>
-                                <small class="pull-right">5m ago</small>
-                                <strong>Jesica Ocean</strong>
-                                <div>Contrary to popular belief, Lorem Ipsum</div>
-                                <small class="text-muted">Today 1:00 pm - 08.06.2014</small>
-                            </div>
-                        </div>
-
-                        <div class="feed-element">
-                            <div>
-                                <small class="pull-right">5m ago</small>
-                                <strong>Monica Jackson</strong>
-                                <div>The generated Lorem Ipsum is therefore </div>
-                                <small class="text-muted">Yesterday 8:48 pm - 10.06.2014</small>
-                            </div>
-                        </div>
-
-
-                        <div class="feed-element">
-                            <div>
-                                <small class="pull-right">5m ago</small>
-                                <strong>Anna Legend</strong>
-                                <div>All the Lorem Ipsum generators on the Internet tend to repeat </div>
-                                <small class="text-muted">Yesterday 8:48 pm - 10.06.2014</small>
-                            </div>
-                        </div>
-                        <div class="feed-element">
-                            <div>
-                                <small class="pull-right">5m ago</small>
-                                <strong>Damian Nowak</strong>
-                                <div>The standard chunk of Lorem Ipsum used </div>
-                                <small class="text-muted">Yesterday 8:48 pm - 10.06.2014</small>
-                            </div>
-                        </div>
-                        <div class="feed-element">
-                            <div>
-                                <small class="pull-right">5m ago</small>
-                                <strong>Gary Smith</strong>
-                                <div>200 Latin words, combined with a handful</div>
-                                <small class="text-muted">Yesterday 8:48 pm - 10.06.2014</small>
-                            </div>
-                        </div>
-
-                    </div>
+                        <?php
+                        if($NewMsg!=NULL && is_array($NewMsg)){
+                            foreach ($NewMsg as $row=>$value){
+                                ?>
+                                    <div class="feed-element">
+                                        <div>
+                                            <small class="pull-right text-navy"><?php echo $value['RecivedTime']?></small>
+                                            <strong><?php echo $value['SenderName']; ?></strong>
+                                            <div><?php echo $value['subject'];?></div>
+                                            <small class="text-muted"><?php echo $value['RecivedOnTime'].' - '.$value['RecivedOnDate']?></small>
+                                        </div>
+                                    </div>
+                                    <?php
+                            }
+                        }
+                        ?>
+                        
+                   </div>
                 </div>
             </div>
         </div>
