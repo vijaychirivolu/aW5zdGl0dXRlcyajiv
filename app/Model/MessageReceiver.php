@@ -186,6 +186,37 @@ class MessageReceiver extends AppModel {
         }
     }
     
+    
+    /**
+     * Function to get the recent messages of the user
+     * @return json Messages list in json response
+     */
+    public function getRecentMessages($conditions) {
+        try {
+            $result = $this->find("all", array(
+                                    "conditions" => $conditions,
+                                    "limit" => 4,
+                                    "recursive" => 1
+                                ));
+            return (!empty($result))?$result:array();
+        } catch (Exception $e) {
+            return FALSE;
+        }
+    }
+    /**
+     * Function to delete message perminently
+     * @param type $messagereceiverId
+     * @return 
+     */
+    public function messagePerminentDelete($conditions, $updateData) {
+        try {
+            $this->belongsTo = array();
+            return $this->updateAll($conditions, $updateData);
+        } catch (Exception $e) {
+            return false;
+        }
+    }
+    
     public function getNewMessageCntByRecieverId($instituteId=0,$recieverId=0){
         $inParams=array(0=>$instituteId,1=>$recieverId);
         $output = $this->executeMssqlSp('spGetUnreadMsgByReceiverId', $inParams );

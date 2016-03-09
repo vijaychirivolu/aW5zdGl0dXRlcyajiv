@@ -53,7 +53,7 @@
                     <button class="btn btn-white btn-sm refresh-trash-messages" data-toggle="tooltip" data-placement="left" title="Refresh outbox" id="refreshoutbox"><i class="fa fa-refresh"></i> Refresh</button>
                     <!--button class="btn btn-white btn-sm" data-toggle="tooltip" data-placement="top" title="Mark as read"><i class="fa fa-eye"></i> </button-->
                     <!--button class="btn btn-white btn-sm" data-toggle="tooltip" data-placement="top" title="Mark as important"><i class="fa fa-exclamation"></i> </button-->
-                    <button class="btn btn-white btn-sm" data-toggle="tooltip" data-placement="top" title="Move to trash" id="deltemessage"><i class="fa fa-trash-o"></i> </button>
+                    <button class="btn btn-white btn-sm perminent-delete" data-toggle="tooltip" data-placement="top" title="Move to trash" id="deltemessage"><i class="fa fa-trash-o"></i> </button>
 
                 </div>
             </div>

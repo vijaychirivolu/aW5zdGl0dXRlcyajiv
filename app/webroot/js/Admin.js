@@ -172,6 +172,8 @@ var Admin = function () {
         initCheckMessage();
         initTrashMessages();
         initEventTimeHideShow();
+        getStatus();
+        messagePerminentDelete();
     }
 
 
@@ -185,6 +187,7 @@ var Admin = function () {
         initFileSelect();
         ajaxFormSubmit();
         initCustomBrowseButton();
+        messagePerminentDelete();
     }
 
     /**

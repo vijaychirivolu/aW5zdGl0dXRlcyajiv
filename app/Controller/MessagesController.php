@@ -43,7 +43,7 @@ class MessagesController extends AppController {
      *    or MissingViewException in debug mode.
      */
     function beforeFilter() {
-        $accessArray = array('index','composeEmail', 'viewMessage','getUserEmails','sentMail','downloaddoc','downloadall','createZipFile','trashMessages','moveMessageToTrash','trashById');
+        $accessArray = array('index','composeEmail', 'viewMessage','getUserEmails','sentMail','downloaddoc','downloadall','createZipFile','trashMessages','moveMessageToTrash','trashById', 'getRecentMessages', 'messagePerminentDelete');
         $this->guestActions = array();
         $this->superadminActions = array('admin_inbox','index','composeEmail');
         $this->adminActions = array();
@@ -424,7 +424,7 @@ public function trashMessages() {
             $formattedArray = array();
             if (isset($result["aaData"])) {
                 foreach ($result["aaData"] as $key => $val):
-                    $formattedArray[$key]["MessageReceiver"]["id"] = '<input type="checkbox" class="" name="readstatus[]" id="read_status" value="'.$val['MessageReceiver']['id'].'">';
+                    $formattedArray[$key]["MessageReceiver"]["id"] = '<input type="checkbox" class="check-message" name="readstatus[]" id="read_status" value="'.$val['MessageReceiver']['id'].'">';
                     $formattedArray[$key]["Users"]["first_name"] = '<a href="' . Router::url('/', true) . 'messages/viewMessage/trash/' . $val["Messages"]["id"] . '">'.ucwords($val['Users']['first_name']).'</a>';
                     $formattedArray[$key]["MessageReceiver"]["status"] = $val['MessageReceiver']['status'];
                     $formattedArray[$key]["Messages"]["subject"] = '<a href="' . Router::url('/', true) . 'messages/viewMessage/trash/' . $val["Messages"]["id"] . '">'.$val['Messages']['subject'].'</a>';
@@ -466,13 +466,22 @@ public function trashById($type = "",$id = 0 ) {
             "MessageReceiver.message_id" => $id,
             "MessageReceiver.receiver_id" => $this->userId
         );
-        $updateData = array(
-            "MessageReceiver.type" => 12003
-        );
+        
+        if ($type != "trash") {
+           $updateData = array(
+                "MessageReceiver.type" => 12003
+            ); 
+        } else {
+            $updateData = array(
+                "MessageReceiver.row_status" => 0
+            );
+        }
         if ($type == "inbox" && $id != 0) {
             $conditions['MessageReceiver.type'] = 12001;
         } else if ($type == "outbox" && $id != 0) {
             $conditions['MessageReceiver.type'] = 12002;
+        } else if ($type == "trash" && $id != 0) {
+            $conditions['MessageReceiver.type'] = 12003;
         }
         $result = $this->MessageReceiver->moveTrashById($conditions, $updateData);
         if($result) {
@@ -480,12 +489,55 @@ public function trashById($type = "",$id = 0 ) {
                 $this->redirect(array("controller" => "messages", "action" => "index"),$exit);
             } else if ($type == "outbox") {
                 $this->redirect(array("controller" => "messages", "action" => "sentMail"),$exit);
+            } else if ($type == "trash") {
+                $this->redirect(array("controller" => "messages", "action" => "trashMessages"),$exit);
             }
         } else {
             $msg = __('Something went wrong!');
             $this->_setFlashMsgs($msg, 'danger');
             $this->redirect(array("controller" => "messages", "action" => "viewMessage",$type,$id),$exit);
         }
+    }
+}
+
+/**
+ * Function to get the recent messages list to show in the header
+ * @return json response of messages list
+ */
+public function getRecentMessages() {
+    $conditions = array (
+                            "MessageReceiver.receiver_id" => $this->userId,
+                            "MessageReceiver.type" => 12001,
+                            "MessageReceiver.status" => 10002,
+                            "MessageReceiver.row_status" => 1
+                        );
+    $result = $this->MessageReceiver->getRecentMessages($conditions);
+    echo json_encode($result);
+    exit;
+    
+}
+
+/**
+ * Delete message perminently
+ * @param int message id
+ * @return boolean messagedelete status
+ */
+public function messagePerminentDelete() {
+    $conditions = array(
+                    "MessageReceiver.receiver_id = ".AuthComponent::user('id'),
+                    "MessageReceiver.id in (".$_POST['trshids'].")"
+                  );
+    //pr($conditions);exit;
+    $updateData = array(
+                    "MessageReceiver.row_status" => 0
+                  );
+    $result = $this->MessageReceiver->messagePerminentDelete($updateData, $conditions);
+    if($result) {
+        echo json_encode(array("status"=>1,"msg"=>"Message deleted perminently."));
+        exit;
+    } else {
+        echo json_encode(array("status"=>2,"msg"=>"Something went wrong"));
+        exit;
     }
 }
             }

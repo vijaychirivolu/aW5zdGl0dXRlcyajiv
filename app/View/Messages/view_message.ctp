@@ -44,9 +44,9 @@
                     <h5>
                         <span class="pull-right font-noraml"><?php echo date('h:iA d M Y', strtotime($messageinfo['Message']['time_created'])); ?></span>
                         <?php if($type == "outbox") { ?>
-                        <span class="font-noraml">To: </span><span class="message-receviers"><?php echo $messageinfo['MessageReceiver'][0]['User']['email'] ?></span><?php echo "(".count($messageinfo['MessageReceiver']).")"; ?>
+                        <span class="font-noraml">To: </span><span class="message-receviers"><?php echo (isset($messageinfo['MessageReceiver'][0]['User']['email']) && $messageinfo['MessageReceiver'][0]['User']['email'] != "")?$messageinfo['MessageReceiver'][0]['User']['email']:"" ?></span><?php echo "(".count($messageinfo['MessageReceiver']).")"; ?>
                         <?php } else if($type == "inbox") { ?>
-                            <span class="font-noraml">From: </span><span class="message-receviers"><?php echo $messageinfo['MessageReceiver'][0]['User']['email'] ?></span>
+                        <span class="font-noraml">From: </span><span class="message-receviers"><?php echo (isset($messageinfo['MessageReceiver'][0]['User']['email']) && $messageinfo['MessageReceiver'][0]['User']['email'] != "")?$messageinfo['MessageReceiver'][0]['User']['email']:"" ?></span>
                         <?php } ?>
                         
                     </h5>
